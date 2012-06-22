@@ -1,0 +1,43 @@
+
+.columnwrap div {
+	line-height: 20px;
+}
+
+.columnwrap .cf-column p {
+	margin: 20px 0;
+	line-height: 20px;
+}
+
+.columnwrap .simulated-parags {
+	height: 290px;
+	margin-bottom: 20px;
+}
+
+
+
+/* Colours */
+
+.columnwrap .cf-page {
+	outline: 1px solid white;
+}
+
+.columnwrap #viewportid {
+	background-color: gray;
+}
+
+.columnwrap .cf-column p {
+	background-color: rgba(0, 0, 0, 0.1);
+	outline: 1px solid white;
+	color: white;
+	background-image: -webkit-repeating-linear-gradient(red 0px, red 1px, transparent 1px, transparent 20px);
+}
+
+.columnwrap .cf-column div {
+	outline: 1px solid white;
+	color: white;
+	background-image: -webkit-repeating-linear-gradient(red 0px, red 1px, transparent 1px, transparent 100px);
+}
+
+.columnwrap .simulated-parags {
+	background-color: #700;
+}
