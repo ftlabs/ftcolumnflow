@@ -52,7 +52,7 @@ or:
 		pagePadding: 30,
 	});
 
-To render flowed content, pass either text strings or DOM nodes into the FTColumnflow.flow() method:
+To render flowed content, pass either text strings or DOM nodes into the FTColumnflow.flow() method.  For example, if you have the following content, separated into flowed and fixed groups:
 
 	<div id="flowedContent">
 		<p>One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections.</p>
@@ -70,12 +70,14 @@ To render flowed content, pass either text strings or DOM nodes into the FTColum
 		</figure>
 	</div>
 
+You could apply FTColumnflow to this content with code such as:
+
 	var flowedContent = document.getElementById('flowedContent'),
 		fixedContent  = document.getElementById('fixedContent');
 
 	cf.flow(flowedContent, fixedContent);
 
-or:
+Alternatively, you can pass your content into the flow method directly:
 
 	cf.flow(
 		'<p>One morning, when Gregor Samsa woke from troubled dreams...',
@@ -88,12 +90,12 @@ or:
 
 Here are some examples of FTColumnflow in use - feel free to copy the code and use as the basis for your own projects.
 
-* [Native CSS3 columns - useful, but limited](examples/6.html)
-* [Basic usage example](examples/1.html)
-* [Another layout](examples/5.html)
-* [FTColumnflow elements highlighted](examples/2.html), which shows the derived baseline grid, the pages and columns, and also exposes the mechanism by which FTColumnflow overflows columns with content, then hides the overflow.
-* [Vertically-orientated pages](examples/3.html)
-* [noWrap class and noWrapOnTags config setting](examples/4.html)
+* [Native CSS3 columns - useful, but limited](ftcolumnflow/examples/6.html), demonstrating the capability of CSS columns without using FTColumnflow.
+* [Basic usage example](ftcolumnflow/examples/1.html)
+* [Another layout](ftcolumnflow/examples/5.html)
+* [FTColumnflow elements highlighted](ftcolumnflow/examples/2.html), which shows the derived baseline grid, the pages and columns, and also exposes the mechanism by which FTColumnflow overflows columns with content, then hides the overflow.
+* [Vertically-orientated pages](ftcolumnflow/examples/3.html)
+* [noWrap class and noWrapOnTags config setting](ftcolumnflow/examples/4.html)
 
 ## Configuration
 
