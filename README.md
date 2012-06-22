@@ -90,12 +90,12 @@ Alternatively, you can pass your content into the flow method directly:
 
 Here are some examples of FTColumnflow in use - feel free to copy the code and use as the basis for your own projects.
 
-* [Native CSS3 columns - useful, but limited](ftcolumnflow/examples/6.html), demonstrating the capability of CSS columns without using FTColumnflow.
-* [Basic usage example](ftcolumnflow/examples/1.html)
-* [Another layout](ftcolumnflow/examples/5.html)
-* [FTColumnflow elements highlighted](ftcolumnflow/examples/2.html), which shows the derived baseline grid, the pages and columns, and also exposes the mechanism by which FTColumnflow overflows columns with content, then hides the overflow.
-* [Vertically-orientated pages](ftcolumnflow/examples/3.html)
-* [noWrap class and noWrapOnTags config setting](ftcolumnflow/examples/4.html)
+* examples/1.html: Basic usage example
+* examples/2.html: FTColumnflow elements highlighted, which shows the derived baseline grid, the pages and columns, and also exposes the mechanism by which FTColumnflow overflows columns with content, then hides the overflow.
+* examples/3.html: Vertically-orientated pages
+* examples/4.html: noWrap class and noWrapOnTags config setting
+* examples/5.html: Another layout
+* examples/6.html: Native CSS3 columns, demonstrating the capability of CSS columns without using FTColumnflow.
 
 ## Configuration
 
