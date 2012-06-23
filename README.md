@@ -90,12 +90,12 @@ Alternatively, you can pass your content into the flow method directly:
 
 Here are some examples of FTColumnflow in use - feel free to copy the code and use as the basis for your own projects.
 
-* examples/1.html: Basic usage example
-* examples/2.html: FTColumnflow elements highlighted, which shows the derived baseline grid, the pages and columns, and also exposes the mechanism by which FTColumnflow overflows columns with content, then hides the overflow.
-* examples/3.html: Vertically-orientated pages
-* examples/4.html: noWrap class and noWrapOnTags config setting
-* examples/5.html: Another layout
-* examples/6.html: Native CSS3 columns, demonstrating the capability of CSS columns without using FTColumnflow.
+* [Basic usage example](http://ftlabs.github.com/ftcolumnflow/1.html)
+* [FTColumnflow elements highlighted](http://ftlabs.github.com/ftcolumnflow/2.html), which shows the derived baseline grid, the pages and columns, and also exposes the mechanism by which FTColumnflow overflows columns with content, then hides the overflow.
+* [Vertically-orientated pages](http://ftlabs.github.com/ftcolumnflow/3.html)
+* [noWrap class and noWrapOnTags config setting](http://ftlabs.github.com/ftcolumnflow/4.html)
+* [Another layout](http://ftlabs.github.com/ftcolumnflow/5.html)
+* [Native CSS3 columns](http://ftlabs.github.com/ftcolumnflow/6.html), demonstrating the capability of CSS columns without using FTColumnflow.
 
 ## Configuration
 
@@ -234,9 +234,11 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 *	`reflow({});`
 
-		Re-flow the same content using different configuration parameters. This is useful when a hand-held device is rotated (orientationchange event), or font-sized is changed on the page, for example.
+	Re-flow the same content using different configuration parameters. This is useful when a hand-held device is rotated (orientationchange event), or font-sized is changed on the page, for example.
 
-		* `config` 		- Object of key/value configuration pairs (see **Configuration** above).
+	* `config`
+
+		Object of key/value configuration pairs (see **Configuration** above).
 
 *	`destroy();`
 
