@@ -1,0 +1,57 @@
+<html>
+	<head>
+		<script type="text/javascript" src="https://raw.github.com/ftlabs/ftcolumnflow/master/src/FTColumnflow.js"></script>
+		<meta charset="utf-8" />
+
+		<style>
+			body { margin: 10px; padding: 0; }
+			#viewport { width: 600px; height: 300px; }
+			#flowedContent, #fixedContent { display: none; }
+
+			.cf-page { outline: 1px solid red; background-color: rgba(255, 0, 0, 0.1); }
+			.cf-column { outline: 1px solid blue; background-color: rgba(0, 0, 255, 0.1); }
+
+			strong { color: red; }
+
+			h3 { margin: 0; font-size: 1em; font-weight: normal; color: blue; }
+		</style>
+	</head>
+
+
+	<body>
+
+		<div id="viewport">
+			<div id="target">
+			</div>
+		</div>
+
+		<div id="flowedContent">
+			<p>One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin.</p>
+
+			<p><strong>Image allowed to wrap:</strong></p>
+			<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Metamorphosis.jpg/147px-Metamorphosis.jpg" style="width: 147px; height: 239px;" />
+
+			<p>His room, a proper human room although a little too small, lay peacefully between its four familiar walls. A collection of textile samples lay spread out on the table - Samsa was a travelling salesman.</p>
+
+			<p><strong>Wrapping prevented using <em>nowrap</em> class, and heading has <em>keepwithnext</em>:</strong></p>
+			<h3 class="keepwithnext">A picture:</h3>
+			<img class="nowrap" src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Metamorphosis.jpg/147px-Metamorphosis.jpg" style="width: 147px; height: 239px;" />
+
+			<p>It showed a lady fitted out with a fur hat and fur boa who sat upright, raising a heavy fur muff that covered the whole of her lower arm towards the viewer.</p>
+		</div>
+
+
+		<script type="text/javascript">
+
+			var cf = new FTColumnflow('target', 'viewport', {
+				columnCount:           3,
+				standardiseLineHeight: true,
+				pagePadding:           50,
+			});
+
+			cf.flow(document.getElementById('flowedContent'));
+
+		</script>
+
+	</body>
+</html>
