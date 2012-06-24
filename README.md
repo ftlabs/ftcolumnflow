@@ -52,7 +52,7 @@ or:
 		pagePadding: 30,
 	});
 
-To render flowed content, pass either text strings or DOM nodes into the FTColumnflow.flow() method.  For example, if you have the following content, separated into flowed and fixed groups:
+To render flowed content, pass either text strings or DOM nodes into the `FTColumnflow.flow()` method.  For example, if you have the following content, separated into flowed and fixed groups:
 
 	<div id="flowedContent">
 		<p>One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections.</p>
@@ -121,7 +121,7 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 *	`layoutDimensionsCache: {...},`
 
-	Pass in cached values from a previous invocation of FTColumnflow with exactly the same configuration parameters and viewport dimensions. These can be obtained from a previous flow using `cf.layoutDimensions();` *(Object, default null)*
+	Pass in cached values from a previous invocation of FTColumnflow with exactly the same configuration parameters and viewport dimensions. These can be obtained from a previous flow using `cf.layoutDimensions;` *(Object, default null)*
 
 *	`pageArrangement: 'horizontal',`
 
@@ -137,11 +137,11 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 *	`columnWidth: 200,`
 
-	Optimal column width in pixels, or 'auto'. Integer must be greater than 0. The actual columns may be wider (to fill the available space) or narrower if the specified columnWidth is greater than the available width. A value of auto will result in a column width determined by using the other properties (columnCount and columnGap). *(Integer|'auto', default 'auto')*
+	Optimal column width in pixels, or 'auto'. Integer must be greater than 0. The actual columns may be wider (to fill the available space) or narrower if the specified `columnWidth` is greater than the available width. A value of auto will result in a column width determined by using the other properties (columnCount and columnGap). *(Integer|'auto', default 'auto')*
 
 *	`columnCount: 3,`
 
-	Optimal number of columns per page, or 'auto'. Integer must be greater than 0. If both columnWidth and columnCount are defined, columnCount is the *maximum* number of columns per page. A value of auto will result in a column count determined by using the other properties (columnWidth and columnGap). *(Integer|'auto', default 'auto')*
+	Optimal number of columns per page, or 'auto'. Integer must be greater than 0. If both `columnWidth` and `columnCount` are defined, columnCount is the *maximum* number of columns per page. A value of auto will result in a column count determined by using the other properties (columnWidth and columnGap). *(Integer|'auto', default 'auto')*
 
 *	`columnGap: 20,`
 
@@ -169,7 +169,7 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 *	`debug: true */,`
 
-	Print internal calls to _log() to the console (Useful for development, not used in this release). *(Boolean, default false)*
+	Print internal calls to `_log()` to the console (Useful for development, not used in this release). *(Boolean, default false)*
 
 
 ## Public interface
@@ -192,7 +192,7 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 		Object of key/value configuration pairs (see **Configuration** above).
 
-	When FTColumnflow is instntiated on an element, the return value from the constructor is an object that offers a number of public properties, methods and events.
+	When FTColumnflow is instantiated on an element, the return value from the constructor is an object that offers a number of public properties, methods and events.
 
 ### Methods
 
