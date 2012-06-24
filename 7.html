@@ -1,0 +1,60 @@
+<html>
+	<head>
+		<script type="text/javascript" src="https://raw.github.com/ftlabs/ftcolumnflow/master/src/FTColumnflow.js"></script>
+		<meta charset="utf-8" />
+
+		<style>
+			body { margin: 10px; padding: 0; }
+			#viewport { width: 900px; height: 600px; }
+			#flowedContent, #fixedContent { display: none; }
+		</style>
+	</head>
+
+
+	<body>
+
+		<div id="viewport">
+			<div id="target">
+			</div>
+		</div>
+
+		<div id="flowedContent">
+			<p>One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections.</p>
+
+			<p>The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest of him, waved about helplessly as he looked. "What's happened to me? " he thought. It wasn't a dream.</p>
+
+			<p>His room, a proper human room although a little too small, lay peacefully between its four familiar walls. A collection of textile samples lay spread out on the table - Samsa was a travelling salesman - and above it there hung a picture that he had recently cut out of an illustrated magazine and housed in a nice, gilded frame.</p>
+
+			<p>It showed a lady fitted out with a fur hat and fur boa who sat upright, raising a heavy fur muff that covered the whole of her lower arm towards the viewer. Gregor then turned to look out the window at the dull weather. Drops of rain could be heard hitting the pane, which made him feel quite sad.</p>
+
+			<p>"How about if I sleep a little bit longer and forget all this nonsense", he thought, but that was something he was unable to do because he was used to sleeping on his right, and in his present state couldn't get into that position. However hard he threw himself onto his right, he always rolled back to where he was.</p>
+
+			<p>He must have tried it a hundred times, shut his eyes so that he wouldn't have to look at the floundering legs, and only stopped when he began to feel a mild, dull pain there that he had never felt before. "Oh, God", he thought, "what a strenuous career it is that I've chosen! Travelling day in and day out. Doing business like this takes much more effort than doing your own business at home, and on top of that there's the curse of travelling, worries about making train connections, bad and irregular food, contact with different people all the time so that you can never get to know anyone or become friendly with them. It can all go to Hell!"</p>
+
+			<p>He felt a slight itch up on his belly; pushed himself slowly up on his back towards the headboard so that he could lift his head better; found where the itch was, and saw that it was covered with lots of little white spots which he didn't know what to make of; and when he tried to feel the place with one of his legs he drew it quickly back because as soon as he touched it he was overcome by a cold shudder. He slid back into his former position. "Getting up early all the time", he thought, "it makes you stupid. You've got to get enough sleep. Other travelling salesmen live a life of luxury. For instance, whenever I go back to the guest house during the morning to copy out the contract, these gentlemen are always still sitting there eating their breakfasts. I ought to just try that with my boss; I'd get kicked out on the spot. But who knows, maybe that would be the best thing for me."</p>
+		</div>
+
+		<div id="fixedContent">
+			<div class="col-span-2" style="width: 200px; background-color: #eee">
+				<h1 style="margin: 10px;">The Metamorphosis</h1>
+				<h2 style="margin: 10px;">Franz Kafka, 1915</h2>
+			</div>
+			<figure class="anchor-bottom-col-2" style="margin: 0; padding: 0; text-align: center;">
+				<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Metamorphosis.jpg/147px-Metamorphosis.jpg" style="width: 147px; height: 239px;" />
+			</figure>
+		</div>
+
+
+		<script type="text/javascript">
+
+			var cf = new FTColumnflow('target', 'viewport', {
+				columnCount:           3,
+				pagePadding:           30,
+			});
+
+			cf.flow(document.getElementById('flowedContent'), document.getElementById('fixedContent'));
+
+		</script>
+
+	</body>
+</html>
