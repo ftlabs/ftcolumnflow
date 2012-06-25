@@ -97,6 +97,18 @@ Here are some examples of FTColumnflow in use - feel free to copy the code and u
 * [Another layout](http://ftlabs.github.com/ftcolumnflow/5.html)
 * [Native CSS3 columns](http://ftlabs.github.com/ftcolumnflow/6.html), demonstrating the capability of CSS columns without using FTColumnflow.
 
+## How does it work?
+
+With FTColumnflow, FTLabs have addressed some of the limitations of the CSS3 multi-column specification. We needed an approach which would give accurate and flexible newspaper-style column layouts, to which we could add fixed-position elements spanning over any number of columns.
+
+Flowing text over columns using JavaScript is not so easy: although it's trivial for a human to spot the last word before a column boundary, not so for a computer. Our first iteration looped through each word in the flowed text to determine whether or not it was within the bounds of the current column. When the first out-of-bounds word was found, the paragraph was split, and the second part moved over to a new column. However, this was found to be very slow and DOM-heavy, especially with long paragraphs.
+
+We then realised that we didn't need to split the paragraphs to prevent out-of-bounds words being seen - we could do the same using `overflow: hidden`. So the new approach is to determine where in a paragraph the column's bottom boundary will fall, and to copy that paragraph to a new column, with a negative top margin equal to that of the overflow. [This example](http://ftlabs.github.com/ftcolumnflow/2.html) shows a FTColumnflow layout with its internals exposed - it can be seen that paragraphs overflow the purple column boundaries, but are repeated in the following column, shifted up so that the next line of text is visible.
+
+One important consideration for this approach is that, using `overflow: hidden`, it's possible for a column's boundary to chop off part of a line of text - see this [broken example](http://ftlabs.github.com/ftcolumnflow/7.html). Here, the line-height of the page elements is not correctly configured in relation to the height of the columns - there is no consistent baseline grid. For a succesful layout with FTColumnflow, it is important that the column height is a whole multiple of the grid height, and that all elements are placed on the grid.
+
+Setting the `standardiseLineHeight` configuration option to `true` (it defaults to `false`) will automatically determine the baseline grid from your page's CSS. It will ensure that column heights are multiples of the grid height, and will pad all fixed and flowed elements to ensure they conform to the grid. See the [same example with `standardiseLineHeight: true`](http://ftlabs.github.com/ftcolumnflow/1.html).
+
 ## Configuration
 
 Configuration options can be specified at create-time by passing a JSON object as the third argument to the `FTColumnflow` constructor. All parameters are optional; any which are specified will override default values.
