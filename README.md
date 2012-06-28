@@ -304,41 +304,26 @@ FTColumnflow supports the following browsers:
 
 FTColumnflow is a fully Test-Driven codebase. Modifcations to the code should have an accompanying test case added to verify the new feature, or confirm the regression or bug is fixed.
 
-FTColumnflow uses [JsTestDriver](http://code.google.com/p/js-test-driver) as a TDD framework. This requires a Java application to be run, which provides a server to which real browsers can be attached. There is a [Ruby wrapper](http://cjohansen.no/en/javascript/jstdutil_a_ruby_wrapper_over_jstestdriver) over JsTestDriver, which provides a slightly better interface.
+**NOTE: as of 73d83b0ad601bf2f2cac7ce62a524dc9bffcc8a9 on 28th June 2012, FTColumnflow no longer uses JsTestDriver as a test framework - we found it was too limited in scope, and that Buster.js fulfilled all the features and more.**
+
+FTColumnflow uses [Buster.js](http://busterjs.org/) as a TDD framework. This requires Node and NPM - installation instructions are at [http://busterjs.org/docs/getting-started/](http://busterjs.org/docs/getting-started/). Buster.js creates an HTTP server to which any number of real browsers can be attached; the tests will be performed on each browser.
 
 ### Usage
 
 *	Change to FTColumnflow directory:
 
-	`$ cd [FTColumnflow root directory]`
+		$ cd [FTColumnflow root directory]
 *	Start test suite server:
 
-	`$ java -jar JsTestDriver.jar --port 4224`
-*	Visit [http://localhost:4224](http://localhost:4224) in any number of browsers, and capture them to run tests in that browser.
+		$ buster server
+		buster-server running on http://localhost:1111
+	Buster.js has now started a server - in this case, on port 1111 (use `$ buster server -p 1234` to specify the port). Visit [http://localhost:1111](http://localhost:1111) in any number of browsers, and capture them to run tests in those browser.
 
-*	OR, run the server with the path to the browser binary already set:
+*	Run tests in a new shell:
 
-	`$ jstestdriver --port 4224 --browser "/Applications/Safari.app/Contents/MacOS/Safari"`
-*	Run tests in a new shell (passing the correct path to your `JsTestDriver.jar` file):
+		$ buster test
 
-	`$ java -jar JsTestDriver.jar --tests all --captureConsole`
-
-### Or, with the Ruby wrapper:
-
-*	Change to FTColumnflow directory:
-
-	`$ cd [FTColumnflow root directory]`
-*	Start test suite server:
-
-	`$ jstestdriver --port 4224`
-*	Visit [http://localhost:4224](http://localhost:4224) in any number of browsers, and capture them to run tests in that browser.
-
-*	Run tests in a new shell (passing the correct path to your `JsTestDriver.jar` file):
-
-	`$ jstestdriver --tests all --captureConsole`
-
-Substitute `--tests Config` or `--tests Config,ColumnWrap` for `--tests all` to run a subset of tests
-
+	There are a number of options for test output - see the [reporters documentation](http://busterjs.org/docs/test/reporters/) and the **Reporters** examples at the bottom of [the overview page](http://busterjs.org/docs/overview/).
 
 ## Credits and collaboration
 
