@@ -29,63 +29,74 @@ FTColumnflow accepts two types of content—`fixed` and `flowed`—which can be 
 
 To activate FTColumnflow on an article, create a target element inside a viewport:
 
-	<section id="viewport">
-		...
-		<article id="article-1"></article>
-		...
-	</section>
+```html
+<section id="viewport">
+	...
+	<article id="article-1"></article>
+	...
+</section>
+```
 
 Create a new instance of FTColumnflow, passing either ID names or DOM element references for `target` and `viewport`, along with an object of configuration parameters (all of which are optional):
 
-	var cf = new FTColumnflow('article-1', 'viewport', {
-		columnCount: 3,
-		standardiseLineHeight: true,
-		pagePadding: 30,
-	});
+```javascript
+var cf = new FTColumnflow('article-1', 'viewport', {
+	columnCount: 3,
+	standardiseLineHeight: true,
+	pagePadding: 30,
+});
+```
 
 or:
 
-	var articleEl  = document.getElementById('article-1');
-	var viewportEl = document.getElementById('viewport');
+```javascript
+var articleEl  = document.getElementById('article-1');
+var viewportEl = document.getElementById('viewport');
 
-	var cf = new FTColumnflow(articleEl, viewportEl, {
-		columnCount: 3,
-		standardiseLineHeight: true,
-		pagePadding: 30,
-	});
+var cf = new FTColumnflow(articleEl, viewportEl, {
+	columnCount: 3,
+	standardiseLineHeight: true,
+	pagePadding: 30,
+});
+```
 
 To render flowed content, pass either text strings or DOM nodes into the `FTColumnflow.flow()` method.  For example, if you have the following content, separated into flowed and fixed groups:
 
-	<div id="flowedContent">
-		<p>One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections.</p>
-		<p>The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest of him, waved about helplessly as he looked. "What's happened to me? " he thought. It wasn't a dream.</p>
-		...
-	</div>
+```html
+<div id="flowedContent">
+	<p>One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections.</p>
+	<p>The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest of him, waved about helplessly as he looked. "What's happened to me? " he thought. It wasn't a dream.</p>
+	...
+</div>
 
-	<div id="fixedContent">
-		<div class="col-span-2">
-			<h1>The Metamorphosis</h1>
-			<h2>Franz Kafka, 1915</h2>
-		</div>
-		<figure class="anchor-bottom-col-2">
-			<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Metamorphosis.jpg/147px-Metamorphosis.jpg" style="width: 147px; height: 239px;" />
-		</figure>
+<div id="fixedContent">
+	<div class="col-span-2">
+		<h1>The Metamorphosis</h1>
+		<h2>Franz Kafka, 1915</h2>
 	</div>
+	<figure class="anchor-bottom-col-2">
+		<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Metamorphosis.jpg/147px-Metamorphosis.jpg" style="width: 147px; height: 239px;" />
+	</figure>
+</div>
+```
 
 You could apply FTColumnflow to this content with code such as:
 
-	var flowedContent = document.getElementById('flowedContent'),
-		fixedContent  = document.getElementById('fixedContent');
+```javascript
+var flowedContent = document.getElementById('flowedContent'),
+	fixedContent  = document.getElementById('fixedContent');
 
-	cf.flow(flowedContent, fixedContent);
+cf.flow(flowedContent, fixedContent);
+```
 
 Alternatively, you can pass your content into the flow method directly:
 
-	cf.flow(
-		'<p>One morning, when Gregor Samsa woke from troubled dreams...',
-		'<div class="col-span-2"><h1>The Metamorphosis</h1><h2>Franz Kafka, 1915</h2></div>...'
-	);
-
+```javascript
+cf.flow(
+	'<p>One morning, when Gregor Samsa woke from troubled dreams...',
+	'<div class="col-span-2"><h1>The Metamorphosis</h1><h2>Franz Kafka, 1915</h2></div>...'
+);
+```
 
 
 ## Examples
