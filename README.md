@@ -20,7 +20,8 @@ It is designed with the same column dimension specification API as the [CSS3 mul
 Include FTColumnflow.js in your JavaScript bundle or add it to your HTML page like this:
 
 ```html
-<script type='text/javascript' src='/src/FTColumnflow.js'></script>```
+<script type='text/javascript' src='/src/FTColumnflow.js'></script>
+```
 
 The script must be loaded prior to instantiating FTColumnflow on any element of the page. FTColumnflow adds pages and columns to the DOM inside a specified `target` element, which must be a child of the `viewport` element. The resulting pages are the same dimensions as the `viewport`, which allows for a scrolling window of multiple `target`s and pages to sit inside it.
 
