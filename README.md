@@ -19,7 +19,8 @@ It is designed with the same column dimension specification API as the [CSS3 mul
 
 Include FTColumnflow.js in your JavaScript bundle or add it to your HTML page like this:
 
-    <script type='text/javascript' src='/src/FTColumnflow.js'></script>
+```html
+<script type='text/javascript' src='/src/FTColumnflow.js'></script>```
 
 The script must be loaded prior to instantiating FTColumnflow on any element of the page. FTColumnflow adds pages and columns to the DOM inside a specified `target` element, which must be a child of the `viewport` element. The resulting pages are the same dimensions as the `viewport`, which allows for a scrolling window of multiple `target`s and pages to sit inside it.
 
@@ -304,7 +305,7 @@ FTColumnflow supports the following browsers:
 
 FTColumnflow is a fully Test-Driven codebase. Modifcations to the code should have an accompanying test case added to verify the new feature, or confirm the regression or bug is fixed.
 
-**NOTE: as of 73d83b0ad601bf2f2cac7ce62a524dc9bffcc8a9 on 28th June 2012, FTColumnflow no longer uses JsTestDriver as a test framework - we found it was too limited in scope, and that Buster.js fulfilled all the features and more.**
+**NOTE: as of [28th June 2012](https://github.com/ftlabs/ftcolumnflow/commit/73d83b0ad601bf2f2cac7ce62a524dc9bffcc8a9), FTColumnflow no longer uses JsTestDriver as a test framework - we found it was too limited in scope, and that Buster.js fulfilled all the features and more.**
 
 FTColumnflow uses [Buster.js](http://busterjs.org/) as a TDD framework. This requires Node and NPM - installation instructions are at [http://busterjs.org/docs/getting-started/](http://busterjs.org/docs/getting-started/). Buster.js creates an HTTP server to which any number of real browsers can be attached; the tests will be performed on each browser.
 
