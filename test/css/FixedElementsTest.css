@@ -1,64 +1,64 @@
-.fixedelements .fixed {
+.fixed {
 	height: 200px;
 	width: 250px;
 }
 
-.fixedelements .fixed100 {
+.fixed100 {
 	height: 100px;
 }
 
-.fixedelements .fixed205 {
+.fixed205 {
 	height: 205px;
 }
 
-.fixedelements .fixed500 {
+.fixed500 {
 	height: 500px;
 }
 
-.fixedelements .fixed600 {
+.fixed600 {
 	height: 600px;
 }
 
-.fixedelements p, .fixedelements div, .fixedelements .cf-column {
+p, div, .cf-column {
 	line-height: 20px;
 }
 
-.fixedelements p {
+p {
 	margin: 20px 0;
 }
 
-.fixedelements .fixed.col-span-1, .fixedelements .fixed.col-span-1-left {
+.fixed.col-span-1, .fixed.col-span-1-left {
 	width: 250px;
 }
 
-.fixedelements .fixed.col-span-2, .fixedelements .fixed.col-span-2-left {
+.fixed.col-span-2, .fixed.col-span-2-left {
 	width: 525px;
 }
 
-.fixedelements .fixed.col-span-3, .fixedelements .fixed.col-span-3-left {
+.fixed.col-span-3, .fixed.col-span-3-left {
 	width: 800px;
 }
 
-.fixedelements .shift-up {
+.shift-up {
 	margin-top: -20px;
 }
 
-.fixedelements .auto-width {
+.auto-width {
 	width: auto;
 }
 
-.fixedelements #width-50 {
+#width-50 {
 	width: 50px !important;
 }
 
 
 /* Colours */
 
-.fixedelements .cf-column p, .fixedelements .cf-column div {
+.cf-column p, .cf-column div {
 	background-color: rgba(0, 0, 0, 0.1);
 	background-image: -webkit-repeating-linear-gradient(red 0px, red 1px, transparent 1px, transparent 20px);
 }
 
-.fixedelements .cf-page {
+.cf-page {
 	outline: 1px solid white;
 }
