@@ -291,15 +291,17 @@ All public properties are read-only.
 
 	Example output:
 
-		{
-			"pageInnerWidth":  740,
-			"pageInnerHeight": 600,
-			"colDefaultTop":   0,
-			"colDefaultLeft":  30,
-			"columnCount":     3,
-			"columnWidth":     236,
-			"columnGap":       16
-		}
+```javascript
+{
+	"pageInnerWidth":  740,
+	"pageInnerHeight": 600,
+	"colDefaultTop":   0,
+	"colDefaultLeft":  30,
+	"columnCount":     3,
+	"columnWidth":     236,
+	"columnGap":       16
+}
+```
 
 ## Compatibility
 
