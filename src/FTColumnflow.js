@@ -281,7 +281,7 @@ var FTColumnflow = (function () {
 
 		function _setLayoutDimensions() {
 
-			var i, l, derivedColumnCount;
+			var i, l, derivedColumnCount, computedStyle;
 
 			// If the layoutDimensions parameter was passed in
 			if (config.layoutDimensions !== null) {
@@ -301,11 +301,13 @@ var FTColumnflow = (function () {
 
 			// Determine viewport dimensions if they have not been specified
 			if (!config.viewportWidth) {
-				config.viewportWidth = parseInt(window.getComputedStyle(that.viewport).getPropertyValue('width'), 10);
+				computedStyle = window.getComputedStyle(that.viewport);
+				config.viewportWidth = parseInt(computedStyle.getPropertyValue('width'), 10);
 			}
 
 			if (!config.viewportHeight) {
-				config.viewportHeight = parseInt(window.getComputedStyle(that.viewport).getPropertyValue('height'), 10);
+				if (!computedStyle) computedStyle = window.getComputedStyle(that.viewport);
+				config.viewportHeight = parseInt(computedStyle.getPropertyValue('height'), 10);
 			}
 
 			if (!config.viewportWidth || !config.viewportHeight) {
@@ -313,7 +315,12 @@ var FTColumnflow = (function () {
 			}
 
 			// Determine column gap - 'normal' defaults to 1em
-			config.layoutDimensions.columnGap = ('normal' === config.columnGap) ? parseInt(window.getComputedStyle(that.viewport).fontSize, 10) : config.columnGap;
+			if ('normal' === config.columnGap) {
+				if (!computedStyle) computedStyle = window.getComputedStyle(that.viewport);
+				config.layoutDimensions.columnGap = parseInt(computedStyle.fontSize, 10);
+			} else {
+				config.layoutDimensions.columnGap = config.columnGap;
+			}
 
 			// Determine page dimensions
 			if ('horizontal' === config.pageArrangement) {
@@ -534,7 +541,8 @@ var FTColumnflow = (function () {
 
 		function _addFixedElement(element) {
 
-			var indexedColStart,
+			var computedStyle,
+				indexedColStart,
 				indexedColEnd,
 				anchorY,
 				anchorX,
@@ -561,10 +569,9 @@ var FTColumnflow = (function () {
 
 
 			// Don't do any manipulation on text nodes, or nodes which are hidden
-			// TODO: getComputedStyle() will trigger a render, so do all these calls at once if possible.
-			if (Node.TEXT_NODE === element.nodeType || ('none' === window.getComputedStyle(element).getPropertyValue('display'))) {
-				return;
-			}
+			if (Node.TEXT_NODE === element.nodeType) return;
+			computedStyle = window.getComputedStyle(element);
+			if ('none' === computedStyle.getPropertyValue('display')) return;
 
 			element.classList.add(fixedElementClassName);
 
@@ -646,8 +653,7 @@ var FTColumnflow = (function () {
 			element.style.width = ((indexedColEnd - indexedColStart) * (config.layoutDimensions.columnWidth + config.layoutDimensions.columnGap)) + config.layoutDimensions.columnWidth + 'px';
 
 			// Determine the height of the element, taking into account any vertical shift applied to it using margin-top
-			// TODO: getComputedStyle() will trigger a render, so do all these calls at once if possible.
-			normalisedElementHeight = element.offsetHeight + parseInt(window.getComputedStyle(element).getPropertyValue('margin-top'), 10);
+			normalisedElementHeight = element.offsetHeight + parseInt(computedStyle.getPropertyValue('margin-top'), 10);
 
 			// Find the most appropriate available space for the element on the page
 			switch (anchorY) {
@@ -878,8 +884,6 @@ var FTColumnflow = (function () {
 			if (config.standardiseLineHeight) {
 
 				originalPadding = parseInt(element.getAttribute('data-cf-original-padding'), 10) || null;
-
-				// TODO: getComputedStyle() will trigger a render, so do all these calls at once if possible.
 				existingPadding = parseInt(window.getComputedStyle(element).getPropertyValue('padding-bottom'), 10);
 
 				if (null === originalPadding) {
