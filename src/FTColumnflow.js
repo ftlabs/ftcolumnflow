@@ -1373,23 +1373,12 @@ var FTColumnflow = (function () {
 			});
 
 			// Check target is a child of viewport
-			if (!this._isDescendant(this.viewport, this.target)) {
+			if (this.viewport.compareDocumentPosition(this.target) < this.viewport.DOCUMENT_POSITION_CONTAINED_BY) {
 				throw new FTColumnflowException('InheritanceException', 'Target element must be a child of the viewport.');
 			}
 
 			// Ensure we have an empty target
 			this.target.innerHTML = '';
-		},
-
-		_isDescendant: function (parent, child) {
-			var node = child.parentNode;
-			while (node !== null) {
-				if (node === parent) {
-					return true;
-				}
-				node = node.parentNode;
-			}
-			return false;
 		}
 	};
 
