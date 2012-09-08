@@ -425,20 +425,21 @@ var FTColumnflow = (function () {
 
 		function _createTargetElements() {
 
-			var preloadElement;
+			var preloadElement, targetChildren;
 
 			// Create the preload and render areas
-			that.target.innerHTML = '<div class="' + preloadAreaClassName + ' ' + config.pageClass + '">'
-								+ '<div class="' + config.columnClass + '"></div>'
-							+ '</div>'
-							+ '<div class="' + preloadFixedAreaClassName + '"></div>'
-							+ '<div class="' + renderAreaClassName + '"></div>';
-
-			renderArea = that.target.getElementsByClassName(renderAreaClassName)[0];
+			targetChildren   = document.createDocumentFragment();
+			preloadElement   = targetChildren.appendChild(document.createElement('div'));
+			fixedPreloadArea = targetChildren.appendChild(document.createElement('div'));
+			renderArea       = targetChildren.appendChild(document.createElement('div'));
 
 			// Add the flowed content to the preload area
-			preloadElement = that.target.getElementsByClassName(preloadAreaClassName)[0];
-			preloadColumn  = preloadElement.getElementsByClassName(config.columnClass)[0];
+			preloadColumn    = preloadElement.appendChild(document.createElement('div'));
+
+			preloadElement.className   = preloadAreaClassName + ' ' + config.pageClass;
+			preloadColumn.className    = config.columnClass;
+			fixedPreloadArea.className = preloadFixedAreaClassName;
+			renderArea.className       = renderAreaClassName;
 
 			if ('string' === typeof flowedContent) {
 				preloadColumn.innerHTML = flowedContent;
@@ -448,9 +449,6 @@ var FTColumnflow = (function () {
 				throw new FTColumnflowException('FlowedContentException', 'flowedContent must be a HTML string or a DOM element.');
 			}
 
-			// Add the fixed content to the preload area
-			fixedPreloadArea = that.target.getElementsByClassName(preloadFixedAreaClassName)[0];
-
 			if ('string' === typeof fixedContent) {
 				fixedPreloadArea.innerHTML = fixedContent;
 			} else if (fixedContent instanceof HTMLElement) {
@@ -458,6 +456,8 @@ var FTColumnflow = (function () {
 			} else if (fixedContent) {
 				throw new FTColumnflowException('FixedContentException', 'fixedContent must be a HTML string or a DOM element.');
 			}
+
+			that.target.appendChild(targetChildren);
 		}
 
 
