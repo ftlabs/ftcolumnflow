@@ -89,23 +89,16 @@ var FTColumnflow = (function () {
 		// Implement outerHTML in browsers which don't support it
 		// Adapted from Modernizr's outerHTML polyfill: bit.ly/polyfills
 		_outerHTML = (function() {
-			var outerHTMLXmlSerializer, outerHTMLContainer;
-			if (typeof document !== "undefined" && !document.createElementNS("http://www.w3.org/1999/xhtml", "_").hasOwnProperty('outerHTML')) {
-				if (document.xmlVersion) {
-					outerHTMLXmlSerializer = new XMLSerializer();
-					return function _outerHTMLXML(node) {
-						return outerHTMLXmlSerializer.serializeToString(node);
-					};
-				} else {
-					outerHTMLContainer = document.createElementNS("http://www.w3.org/1999/xhtml", "_");
-					return function _outerHTMLNode(node) {
-						var html;
-						outerHTMLContainer.appendChild(node.cloneNode(false));
-						html = outerHTMLContainer.innerHTML.replace("><", ">" + node.innerHTML + "<");
-						outerHTMLContainer.innerHTML = "";
-						return html;
-					};
-				}
+			var outerHTMLContainer;
+			if (typeof document !== "undefined" && !document.documentElement.hasOwnProperty('outerHTML')) {
+				outerHTMLContainer = document.createElementNS("http://www.w3.org/1999/xhtml", "_");
+				return function _outerHTMLNode(node) {
+					var html;
+					outerHTMLContainer.appendChild(node.cloneNode(false));
+					html = outerHTMLContainer.innerHTML.replace("><", ">" + node.innerHTML + "<");
+					outerHTMLContainer.innerHTML = "";
+					return html;
+				};
 			} else {
 				return function _outerHTMLNative(node) {
 					return node.outerHTML;
