@@ -1,5 +1,5 @@
 /**
- * FTColumnflow is a polyfill that fixes the inadequacies of CSS column layouts.
+ * @preserve FTColumnflow is a polyfill that fixes the inadequacies of CSS column layouts.
  *
  * It is developed by FT Labs (http://labs.ft.com), part of the Financial Times.
  * It is extensively used in the FT Web App (http://app.ft.com), where it allows us to
@@ -16,11 +16,12 @@
  * It is designed with the same column dimension specification API as the CSS3 multi-column specification
  * (http://www.w3.org/TR/css3-multicol/), but gives far greater flexibility over element positioning within those columns.
  *
- * @codingstandard ftlabs-jslint
  * @copyright The Financial Times Limited [All Rights Reserved]
-*/
+ * @license MIT License (see LICENCE.txt)
+ * @codingstandard ftlabs-jslint
+ */
 
-this.FTColumnflow = (function () {
+var FTColumnflow = (function () {
 
 	"use strict";
 
