@@ -21,6 +21,8 @@
  * @codingstandard ftlabs-jslint
  */
 
+/*jslint browser:true, es5: true*/
+/*global Node*/
 var FTColumnflow = (function () {
 
 	"use strict";
@@ -87,7 +89,7 @@ var FTColumnflow = (function () {
 		// Implement outerHTML in browsers which don't support it
 		// Adapted from Modernizr's outerHTML polyfill: bit.ly/polyfills
 		_outerHTML = (function() {
-			var outerHTMLXmlSerializer, outerHTMLContainer, html;
+			var outerHTMLXmlSerializer, outerHTMLContainer;
 			if (typeof document !== "undefined" && !document.createElementNS("http://www.w3.org/1999/xhtml", "_").hasOwnProperty('outerHTML')) {
 				if (document.xmlVersion) {
 					outerHTMLXmlSerializer = new XMLSerializer();
@@ -121,7 +123,6 @@ var FTColumnflow = (function () {
 			config = {},
 
 			// Debugging
-			debugMode,
 			showGrid,
 
 			// String or DOM node
@@ -209,9 +210,6 @@ var FTColumnflow = (function () {
 					config[i] = userConfig[i];
 				}
 			}
-
-			// Enable logging?
-			if (config.debug !== undefined) debugMode = !!config.debug;
 
 			// Enable showGrid?
 			if (config.showGrid !== undefined) showGrid = !!config.showGrid;
@@ -1279,13 +1277,6 @@ var FTColumnflow = (function () {
 				}
 			}
 			return maxEl;
-		}
-
-
-		function _log() {
-
-			if (!debugMode) return;
-			console.log.apply(console, arguments);
 		}
 
 
