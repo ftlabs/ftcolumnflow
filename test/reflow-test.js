@@ -8,6 +8,7 @@
 buster.testCase('Reflow', {
 
 	setUp : function(done) {
+		this.timeout = 1000;
 		document.body.innerHTML = '<div id="viewportid"><div id="targetid"></div></div>';
 		addStylesheets(['all.css', 'reflow.css'], done);
 	},
