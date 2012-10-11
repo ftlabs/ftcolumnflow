@@ -1,5 +1,5 @@
 /**
- * FTColumnflow is a polyfill that fixes the inadequacies of CSS column layouts.
+ * @preserve FTColumnflow is a polyfill that fixes the inadequacies of CSS column layouts.
  *
  * It is developed by FT Labs (http://labs.ft.com), part of the Financial Times.
  * It is extensively used in the FT Web App (http://app.ft.com), where it allows us to
@@ -16,11 +16,14 @@
  * It is designed with the same column dimension specification API as the CSS3 multi-column specification
  * (http://www.w3.org/TR/css3-multicol/), but gives far greater flexibility over element positioning within those columns.
  *
- * @codingstandard ftlabs-jslint
  * @copyright The Financial Times Limited [All Rights Reserved]
-*/
+ * @license MIT License (see LICENCE.txt)
+ * @codingstandard ftlabs-jslint
+ */
 
-this.FTColumnflow = (function () {
+/*jslint browser:true, es5: true*/
+/*global Node*/
+var FTColumnflow = (function () {
 
 	"use strict";
 
@@ -86,23 +89,16 @@ this.FTColumnflow = (function () {
 		// Implement outerHTML in browsers which don't support it
 		// Adapted from Modernizr's outerHTML polyfill: bit.ly/polyfills
 		_outerHTML = (function() {
-			var outerHTMLXmlSerializer, outerHTMLContainer, html;
-			if (typeof document !== "undefined" && !document.createElementNS("http://www.w3.org/1999/xhtml", "_").hasOwnProperty('outerHTML')) {
-				if (document.xmlVersion) {
-					outerHTMLXmlSerializer = new XMLSerializer();
-					return function _outerHTMLXML(node) {
-						return outerHTMLXmlSerializer.serializeToString(node);
-					};
-				} else {
-					outerHTMLContainer = document.createElementNS("http://www.w3.org/1999/xhtml", "_");
-					return function _outerHTMLNode(node) {
-						var html;
-						outerHTMLContainer.appendChild(node.cloneNode(false));
-						html = outerHTMLContainer.innerHTML.replace("><", ">" + node.innerHTML + "<");
-						outerHTMLContainer.innerHTML = "";
-						return html;
-					};
-				}
+			var outerHTMLContainer;
+			if (typeof document !== "undefined" && !document.documentElement.hasOwnProperty('outerHTML')) {
+				outerHTMLContainer = document.createElementNS("http://www.w3.org/1999/xhtml", "_");
+				return function _outerHTMLNode(node) {
+					var html;
+					outerHTMLContainer.appendChild(node.cloneNode(false));
+					html = outerHTMLContainer.innerHTML.replace("><", ">" + node.innerHTML + "<");
+					outerHTMLContainer.innerHTML = "";
+					return html;
+				};
 			} else {
 				return function _outerHTMLNative(node) {
 					return node.outerHTML;
@@ -120,7 +116,6 @@ this.FTColumnflow = (function () {
 			config = {},
 
 			// Debugging
-			debugMode,
 			showGrid,
 
 			// String or DOM node
@@ -209,9 +204,6 @@ this.FTColumnflow = (function () {
 				}
 			}
 
-			// Enable logging?
-			if (config.debug !== undefined) debugMode = !!config.debug;
-
 			// Enable showGrid?
 			if (config.showGrid !== undefined) showGrid = !!config.showGrid;
 
@@ -280,7 +272,7 @@ this.FTColumnflow = (function () {
 
 		function _setLayoutDimensions() {
 
-			var i, l, derivedColumnCount;
+			var i, l, derivedColumnCount, computedStyle;
 
 			// If the layoutDimensions parameter was passed in
 			if (config.layoutDimensions !== null) {
@@ -300,11 +292,13 @@ this.FTColumnflow = (function () {
 
 			// Determine viewport dimensions if they have not been specified
 			if (!config.viewportWidth) {
-				config.viewportWidth = parseInt(window.getComputedStyle(that.viewport).getPropertyValue('width'), 10);
+				computedStyle = window.getComputedStyle(that.viewport);
+				config.viewportWidth = parseInt(computedStyle.getPropertyValue('width'), 10);
 			}
 
 			if (!config.viewportHeight) {
-				config.viewportHeight = parseInt(window.getComputedStyle(that.viewport).getPropertyValue('height'), 10);
+				if (!computedStyle) computedStyle = window.getComputedStyle(that.viewport);
+				config.viewportHeight = parseInt(computedStyle.getPropertyValue('height'), 10);
 			}
 
 			if (!config.viewportWidth || !config.viewportHeight) {
@@ -312,7 +306,12 @@ this.FTColumnflow = (function () {
 			}
 
 			// Determine column gap - 'normal' defaults to 1em
-			config.layoutDimensions.columnGap = ('normal' === config.columnGap) ? parseInt(window.getComputedStyle(that.viewport).fontSize, 10) : config.columnGap;
+			if ('normal' === config.columnGap) {
+				if (!computedStyle) computedStyle = window.getComputedStyle(that.viewport);
+				config.layoutDimensions.columnGap = parseInt(computedStyle.fontSize, 10);
+			} else {
+				config.layoutDimensions.columnGap = config.columnGap;
+			}
 
 			// Determine page dimensions
 			if ('horizontal' === config.pageArrangement) {
@@ -417,20 +416,21 @@ this.FTColumnflow = (function () {
 
 		function _createTargetElements() {
 
-			var preloadElement;
+			var preloadElement, targetChildren;
 
 			// Create the preload and render areas
-			that.target.innerHTML = '<div class="' + preloadAreaClassName + ' ' + config.pageClass + '">'
-								+ '<div class="' + config.columnClass + '"></div>'
-							+ '</div>'
-							+ '<div class="' + preloadFixedAreaClassName + '"></div>'
-							+ '<div class="' + renderAreaClassName + '"></div>';
-
-			renderArea = that.target.getElementsByClassName(renderAreaClassName)[0];
+			targetChildren   = document.createDocumentFragment();
+			preloadElement   = targetChildren.appendChild(document.createElement('div'));
+			fixedPreloadArea = targetChildren.appendChild(document.createElement('div'));
+			renderArea       = targetChildren.appendChild(document.createElement('div'));
 
 			// Add the flowed content to the preload area
-			preloadElement = that.target.getElementsByClassName(preloadAreaClassName)[0];
-			preloadColumn  = preloadElement.getElementsByClassName(config.columnClass)[0];
+			preloadColumn    = preloadElement.appendChild(document.createElement('div'));
+
+			preloadElement.className   = preloadAreaClassName + ' ' + config.pageClass;
+			preloadColumn.className    = config.columnClass;
+			fixedPreloadArea.className = preloadFixedAreaClassName;
+			renderArea.className       = renderAreaClassName;
 
 			if ('string' === typeof flowedContent) {
 				preloadColumn.innerHTML = flowedContent;
@@ -440,9 +440,6 @@ this.FTColumnflow = (function () {
 				throw new FTColumnflowException('FlowedContentException', 'flowedContent must be a HTML string or a DOM element.');
 			}
 
-			// Add the fixed content to the preload area
-			fixedPreloadArea = that.target.getElementsByClassName(preloadFixedAreaClassName)[0];
-
 			if ('string' === typeof fixedContent) {
 				fixedPreloadArea.innerHTML = fixedContent;
 			} else if (fixedContent instanceof HTMLElement) {
@@ -450,6 +447,8 @@ this.FTColumnflow = (function () {
 			} else if (fixedContent) {
 				throw new FTColumnflowException('FixedContentException', 'fixedContent must be a HTML string or a DOM element.');
 			}
+
+			that.target.appendChild(targetChildren);
 		}
 
 
@@ -533,7 +532,8 @@ this.FTColumnflow = (function () {
 
 		function _addFixedElement(element) {
 
-			var indexedColStart,
+			var computedStyle,
+				indexedColStart,
 				indexedColEnd,
 				anchorY,
 				anchorX,
@@ -560,10 +560,9 @@ this.FTColumnflow = (function () {
 
 
 			// Don't do any manipulation on text nodes, or nodes which are hidden
-			// TODO: getComputedStyle() will trigger a render, so do all these calls at once if possible.
-			if (Node.TEXT_NODE === element.nodeType || ('none' === window.getComputedStyle(element).getPropertyValue('display'))) {
-				return;
-			}
+			if (Node.TEXT_NODE === element.nodeType) return;
+			computedStyle = window.getComputedStyle(element);
+			if ('none' === computedStyle.getPropertyValue('display')) return;
 
 			element.classList.add(fixedElementClassName);
 
@@ -645,8 +644,7 @@ this.FTColumnflow = (function () {
 			element.style.width = ((indexedColEnd - indexedColStart) * (config.layoutDimensions.columnWidth + config.layoutDimensions.columnGap)) + config.layoutDimensions.columnWidth + 'px';
 
 			// Determine the height of the element, taking into account any vertical shift applied to it using margin-top
-			// TODO: getComputedStyle() will trigger a render, so do all these calls at once if possible.
-			normalisedElementHeight = element.offsetHeight + parseInt(window.getComputedStyle(element).getPropertyValue('margin-top'), 10);
+			normalisedElementHeight = element.offsetHeight + parseInt(computedStyle.getPropertyValue('margin-top'), 10);
 
 			// Find the most appropriate available space for the element on the page
 			switch (anchorY) {
@@ -877,8 +875,6 @@ this.FTColumnflow = (function () {
 			if (config.standardiseLineHeight) {
 
 				originalPadding = parseInt(element.getAttribute('data-cf-original-padding'), 10) || null;
-
-				// TODO: getComputedStyle() will trigger a render, so do all these calls at once if possible.
 				existingPadding = parseInt(window.getComputedStyle(element).getPropertyValue('padding-bottom'), 10);
 
 				if (null === originalPadding) {
@@ -1277,13 +1273,6 @@ this.FTColumnflow = (function () {
 		}
 
 
-		function _log() {
-
-			if (!debugMode) return;
-			console.log.apply(console, arguments);
-		}
-
-
 		/* Public methods */
 
 		this.flow = function(flowed, fixed) {
@@ -1384,23 +1373,12 @@ this.FTColumnflow = (function () {
 			});
 
 			// Check target is a child of viewport
-			if (!this._isDescendant(this.viewport, this.target)) {
+			if (this.viewport.compareDocumentPosition(this.target) < this.viewport.DOCUMENT_POSITION_CONTAINED_BY) {
 				throw new FTColumnflowException('InheritanceException', 'Target element must be a child of the viewport.');
 			}
 
 			// Ensure we have an empty target
 			this.target.innerHTML = '';
-		},
-
-		_isDescendant: function (parent, child) {
-			var node = child.parentNode;
-			while (node !== null) {
-				if (node === parent) {
-					return true;
-				}
-				node = node.parentNode;
-			}
-			return false;
 		}
 	};
 
