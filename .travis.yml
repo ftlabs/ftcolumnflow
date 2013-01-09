@@ -3,7 +3,7 @@ cript:
   - sh -e /etc/init.d/xvfb start
   - sleep 1
   - node_modules/.bin/buster-server &
-  - sleep 1
+  - sleep 5
   - firefox http://localhost:1111/capture &
   - sleep 1
  
