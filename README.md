@@ -1,5 +1,7 @@
 # FTColumnflow
 
+[![Build Status](https://travis-ci.org/ftlabs/ftcolumnflow.png?branch=master)](https://travis-ci.org/ftlabs/ftcolumnflow)
+
 FTColumnflow is a polyfill that fixes the inadequacies of CSS column layouts.  It is developed by [FT Labs](http://labs.ft.com), part of the Financial Times.  It is extensively used in the [FT Web App](http://app.ft.com), where it allows us to publish articles with complex newspaper/magazine style layouts, including features such as:
 
 * Configurable column widths, gutters and margins
