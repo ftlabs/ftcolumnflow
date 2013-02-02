@@ -1095,8 +1095,12 @@ var FTColumnflow = (function () {
 
 			renderArea.innerHTML = outputHTML;
 
-			// Set an explicit width on the target - not necessary but will allow adjacent content to flow around the flowed columns normally
-			that.target.style.width = (config.viewportWidth * page_len) + 'px';
+            // Set an explicit width or height on the target - not necessary but will allow adjacent content to flow around the flowed columns normally
+            if ('horizontal' === config.pageArrangement) {
+                that.target.style.width = (config.viewportWidth * page_len) + 'px';
+            } else {
+                that.target.style.height = (config.viewportHeight * page_len) + 'px';
+            }
 
 			// Update the instance page counter
 			that.pagedContentCount = pagedContent.length;
