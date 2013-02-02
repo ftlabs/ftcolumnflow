@@ -83,7 +83,7 @@ var FTColumnflow = (function () {
 
 		cssColumnStyles = '#[targetId] .[columnClass].[columnClass]-[columnNum] { left: [leftPos]px; }\n',
 
-		showGridStyles = '#[targetId] .[pageClass] { background-image: -webkit-linear-gradient(skyblue 1px, transparent 1px); background-size: 100% [lh]px; background-origin: content-box; }',
+        showGridStyles = '#[targetId] .[pageClass] { background-image: -webkit-linear-gradient(skyblue 1px, transparent 1px); background-image: -moz-linear-gradient(skyblue 1px, transparent 1px); background-image: -o-linear-gradient(skyblue 1px, transparent 1px); background-image: linear-gradient(skyblue 1px, transparent 1px); background-size: 100% [lh]px; background-origin: content-box; }',
 
 
 		// Implement outerHTML in browsers which don't support it
