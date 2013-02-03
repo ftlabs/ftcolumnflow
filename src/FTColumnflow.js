@@ -1029,7 +1029,7 @@ var FTColumnflow = (function () {
 		function _renderFlowedContent() {
 
 			var outputHTML = '', indexedPageNum, page_len, pageHTML, page, i, l, element, indexedColumnNum,
-				column_len, column, indexedColumnFrag, fragLen, el, fragment;
+				column_len, total_column_len = 0, column, indexedColumnFrag, fragLen, el, fragment;
 
 			for (indexedPageNum = 0, page_len = pagedContent.length; indexedPageNum < page_len; indexedPageNum++) {
 
@@ -1061,6 +1061,7 @@ var FTColumnflow = (function () {
 
 						// Open a column div
 						pageHTML += _openColumn(fragment, indexedColumnNum);
+                        total_column_len += 1;
 
 						for (el = 0, l = fragment.elements.length; el < l; el++) {
 
@@ -1097,7 +1098,7 @@ var FTColumnflow = (function () {
 
             // Set an explicit width or height on the target - not necessary but will allow adjacent content to flow around the flowed columns normally
             if ('horizontal' === config.pageArrangement) {
-                that.target.style.width = (config.viewportWidth * page_len) + 'px';
+                that.target.style.width = (config.viewportWidth * page_len * ( total_column_len / ( page_len * column_len ) ) ) + 'px';
             } else {
                 that.target.style.height = (config.viewportHeight * page_len) + 'px';
             }
