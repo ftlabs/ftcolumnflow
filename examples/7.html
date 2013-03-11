@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<script type="text/javascript" src="../src/FTColumnflow.js"></script>
+                <meta charset="utf-8" />
+                <title>Line Height for Mixed-language text</title>
+
+		<style>
+			body { 
+				margin: 10px;
+                                padding: 0;
+                                /* Simsun is a common Chinese font */
+				font-family: "Time New Roman", Simsun, serif;
+			}
+			#viewport { width: 900px; height: 400px; }
+			#flowedContent, #fixedContent { display: none; }
+		</style>
+	</head>
+
+
+	<body>
+
+		<div id="viewport">
+			<div id="target">
+			</div>
+		</div>
+
+		<div id="flowedContent">
+			<p>This is a demo paragraph in English.</p>
+			<p>我們應得感謝上蒼的是他不可度量的心裁，對著這不完全，許是懺悔，她們也使我，還不止是難，他拉著我的手，你的腳蹤彷彿在樓板上踹響。加緊我們腳脛上的鏈，而且往往因為他是從繁花的山林裡吹度過來他帶來一股幽遠的淡香，活潑，我心頭便湧起了不少的感想；我的話你是永遠聽不著了，一般紫的紫籐，是怨，在你住處的客室裡，想起怎不可傷？幾年來，可樂，另一伴都會覺得很溫馨｡請好好珍惜身邊的伴侶：在咖啡中加入威士忌，把民眾嚇了一大跳，PS：採用高通芯片的設備在這裡不作推薦，B1開了家Lavazza啊，最近快把星巴克變圖書館了啊，我相信一個月甚至半年內，還是雀巢性價比最高，結果回來的路上居然又打了一個小時的電話。後來怎樣她們干涉了你，只許你獨身；因為有了伴多少總得叫你分心，你生前日常把弄的玩具小車，你也不必帶書。</p>
+		</div>
+
+		<div id="fixedContent">
+			<div class="col-span-2" style="width: 200px; background-color: #eee">
+				<h1 style="margin: 10px;">The Metamorphosis</h1>
+				<h2 style="margin: 10px;">Franz Kafka, 1915</h2>
+			</div>
+			<figure class="anchor-bottom-col-2" style="margin: 0; padding: 0; text-align: center;">
+				<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Metamorphosis.jpg/147px-Metamorphosis.jpg" style="width: 147px; height: 239px;" />
+			</figure>
+		</div>
+
+
+		<script type="text/javascript">
+
+			var cf = new FTColumnflow('target', 'viewport', {
+				columnCount:           3,
+				standardiseLineHeight: true,
+				pagePadding:           30,
+			});
+
+			cf.flow(document.getElementById('flowedContent'), document.getElementById('fixedContent'));
+
+		</script>
+
+	</body>
+</html>
