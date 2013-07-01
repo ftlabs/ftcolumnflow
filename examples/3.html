@@ -1,12 +1,13 @@
 <html>
 	<head>
-		<script type="text/javascript" src="src/FTColumnflow.js"></script>
+		<script type="text/javascript" src="../../FTColumnflow/src/FTColumnflow.js"></script>
 		<meta charset="utf-8" />
 
 		<style>
 			body { margin: 10px; padding: 0; }
-			#viewport { width: 900px; height: 600px; }
+			#viewport { width: 700px; height: 300px; }
 			#flowedContent, #fixedContent { display: none; }
+			.cf-page { outline: 1px solid red; }
 		</style>
 	</head>
 
@@ -39,9 +40,6 @@
 				<h1 style="margin: 10px;">The Metamorphosis</h1>
 				<h2 style="margin: 10px;">Franz Kafka, 1915</h2>
 			</div>
-			<figure class="anchor-bottom-col-2" style="margin: 0; padding: 0; text-align: center;">
-				<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Metamorphosis.jpg/147px-Metamorphosis.jpg" style="width: 147px; height: 239px;" />
-			</figure>
 		</div>
 
 
@@ -50,7 +48,7 @@
 			var cf = new FTColumnflow('target', 'viewport', {
 				columnCount:           3,
 				standardiseLineHeight: true,
-				pagePadding:           30,
+				pageArrangement:       'vertical'
 			});
 
 			cf.flow(document.getElementById('flowedContent'), document.getElementById('fixedContent'));

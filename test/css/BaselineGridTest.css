@@ -1,0 +1,87 @@
+
+
+p {
+	margin: 20px 0;
+	line-height: 20px;
+	background-color: rgba(0, 0, 0, 0.1);
+	background-image: -webkit-repeating-linear-gradient(red 0px, red 1px, transparent 1px, transparent 20px);
+}
+
+img { width: 100%; height: auto; }
+
+
+/* Odd heights */
+
+.height1140 { height: 1140px; }
+.height40 { height: 40px; }
+.height620 { height: 620px; }
+.height580 { height: 580px; }
+
+
+
+/* 17px grid */
+
+.lineheight17 p {
+	margin: 17px 0;
+	line-height: 17px;
+}
+
+.lineheight-in-ems p {
+	margin: 17px 0;
+	font-size: 10px;
+	line-height: 1.7em;
+}
+
+.lineheight-in-percent p {
+	margin: 17px 0;
+	font-size: 10px;
+	line-height: 170%;
+}
+
+.lineheight-multiplier p {
+	margin: 17px 0;
+	font-size: 10px;
+	line-height: 1.7;
+}
+
+.lineheight-inherit .cf-column {
+	line-height: 17px;
+}
+
+.lineheight-inherit p {
+	margin: 17px 0;
+	font-size: 10px;
+	line-height: inherit;
+}
+
+.lineheight-normal p {
+	margin: 17px 0;
+	font-size: 10px;
+	line-height: normal;
+}
+
+
+/* Variable lineheight, median 17px grid */
+
+.lineheight-variable p {
+	margin: 17px 0;
+	line-height: 17px;
+}
+
+.lineheight-variable p:first-of-type {
+	line-height: 23px;
+}
+
+
+/* Paragraphs do not conform to 20px grid */
+
+.unpadded-parags p {
+	height: 53px;
+}
+
+
+/* Paragraphs have 40px top margin and 20px bottom */
+
+.unequal-margin p {
+	margin: 40px 0 20px;
+}
