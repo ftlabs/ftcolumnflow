@@ -1,0 +1,64 @@
+.fixed {
+	height: 200px;
+	width: 250px;
+}
+
+.fixed100 {
+	height: 100px;
+}
+
+.fixed205 {
+	height: 205px;
+}
+
+.fixed500 {
+	height: 500px;
+}
+
+.fixed600 {
+	height: 600px;
+}
+
+p, div, .cf-column {
+	line-height: 20px;
+}
+
+p {
+	margin: 20px 0;
+}
+
+.fixed.col-span-1, .fixed.col-span-1-left {
+	width: 250px;
+}
+
+.fixed.col-span-2, .fixed.col-span-2-left {
+	width: 525px;
+}
+
+.fixed.col-span-3, .fixed.col-span-3-left {
+	width: 800px;
+}
+
+.shift-up {
+	margin-top: -20px;
+}
+
+.auto-width {
+	width: auto;
+}
+
+#width-50 {
+	width: 50px !important;
+}
+
+
+/* Colours */
+
+.cf-column p, .cf-column div {
+	background-color: rgba(0, 0, 0, 0.1);
+	background-image: -webkit-repeating-linear-gradient(red 0px, red 1px, transparent 1px, transparent 20px);
+}
+
+.cf-page {
+	outline: 1px solid white;
+}

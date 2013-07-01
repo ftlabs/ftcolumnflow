@@ -1,12 +1,19 @@
 <html>
 	<head>
-		<script type="text/javascript" src="src/FTColumnflow.js"></script>
+		<script type="text/javascript" src="../../FTColumnflow/src/FTColumnflow.js"></script>
 		<meta charset="utf-8" />
 
 		<style>
 			body { margin: 10px; padding: 0; }
 			#viewport { width: 900px; height: 600px; }
 			#flowedContent, #fixedContent { display: none; }
+
+			.cf-page { outline: 1px solid red; background-color: rgba(255, 0, 0, 0.1); }
+			.cf-column { outline: 1px solid blue; background-color: rgba(0, 0, 255, 0.1); }
+
+			#target .cf-column { overflow: visible !important; }
+
+			p { color: #888; }
 		</style>
 	</head>
 
@@ -35,7 +42,7 @@
 		</div>
 
 		<div id="fixedContent">
-			<div class="col-span-2" style="width: 200px; background-color: #eee">
+			<div class="col-span-2" style="width: 200px; outline: 1px solid">
 				<h1 style="margin: 10px;">The Metamorphosis</h1>
 				<h2 style="margin: 10px;">Franz Kafka, 1915</h2>
 			</div>
@@ -51,6 +58,7 @@
 				columnCount:           3,
 				standardiseLineHeight: true,
 				pagePadding:           30,
+				showGrid:              true
 			});
 
 			cf.flow(document.getElementById('flowedContent'), document.getElementById('fixedContent'));

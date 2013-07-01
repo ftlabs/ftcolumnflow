@@ -1,12 +1,17 @@
 <html>
 	<head>
-		<script type="text/javascript" src="src/FTColumnflow.js"></script>
+		<script type="text/javascript" src="../../FTColumnflow/src/FTColumnflow.js"></script>
 		<meta charset="utf-8" />
 
 		<style>
+			* { box-sizing: border-box }
 			body { margin: 10px; padding: 0; }
 			#viewport { width: 900px; height: 600px; }
 			#flowedContent, #fixedContent { display: none; }
+			.cf-page { outline: 1px solid red; background-color: rgba(255, 0, 0, 0.1); }
+			.boxed { background-color: #eee; outline: 1px solid grey; padding: 10px; }
+			h1, h2 { margin: 0; }
+			figure { margin: 0; padding: 0; }
 		</style>
 	</head>
 
@@ -35,12 +40,14 @@
 		</div>
 
 		<div id="fixedContent">
-			<div class="col-span-2" style="width: 200px; background-color: #eee">
-				<h1 style="margin: 10px;">The Metamorphosis</h1>
-				<h2 style="margin: 10px;">Franz Kafka, 1915</h2>
+			<div class="boxed col-span-4 anchor-top-col-5">
+				<h1>The Metamorphosis</h1>
 			</div>
-			<figure class="anchor-bottom-col-2" style="margin: 0; padding: 0; text-align: center;">
-				<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Metamorphosis.jpg/147px-Metamorphosis.jpg" style="width: 147px; height: 239px;" />
+			<div class="boxed col-span-3 anchor-middle-col-3">
+				<h2>Franz Kafka, 1915</h2>
+			</div>
+			<figure class="anchor-bottom-left">
+				<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Metamorphosis.jpg/147px-Metamorphosis.jpg" style="width: 92px; height: 150px;" />
 			</figure>
 		</div>
 
@@ -48,9 +55,10 @@
 		<script type="text/javascript">
 
 			var cf = new FTColumnflow('target', 'viewport', {
-				columnCount:           3,
+				columnWidth:           100,
 				standardiseLineHeight: true,
 				pagePadding:           30,
+				minFixedPadding:       0.5
 			});
 
 			cf.flow(document.getElementById('flowedContent'), document.getElementById('fixedContent'));

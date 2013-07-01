@@ -1,0 +1,10 @@
+{
+  "name": "ftcolumnflow",
+  "description": "A polyfill that fixes the inadequacies of CSS column layouts.",
+  "version": "0.1.0",
+  "main": "src/FTColumnflow.js",
+  "scripts": [
+    "src/FTColumnflow.js"
+  ],
+  "license": "MIT"
+}
