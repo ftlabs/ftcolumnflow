@@ -1,0 +1,43 @@
+
+div {
+	line-height: 20px;
+}
+
+.cf-column p {
+	margin: 20px 0;
+	line-height: 20px;
+}
+
+.simulated-parags {
+	height: 290px;
+	margin-bottom: 20px;
+}
+
+
+
+/* Colours */
+
+.cf-page {
+	outline: 1px solid white;
+}
+
+#viewportid {
+	background-color: gray;
+}
+
+.cf-column p {
+	background-color: rgba(0, 0, 0, 0.1);
+	outline: 1px solid white;
+	color: white;
+	background-image: -webkit-repeating-linear-gradient(red 0px, red 1px, transparent 1px, transparent 20px);
+}
+
+.cf-column div {
+	outline: 1px solid white;
+	color: white;
+	background-image: -webkit-repeating-linear-gradient(red 0px, red 1px, transparent 1px, transparent 100px);
+}
+
+.simulated-parags {
+	background-color: #700;
+}
