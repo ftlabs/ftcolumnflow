@@ -902,6 +902,16 @@ buster.testCase('ColumnWrap', {
  		assert.match(dimesions.columnGap, 20);
 	},
 
+	'ShouldRemovePreloadAreasWhenAllowReflowIsFalse' : function() {
+
+		createCf({
+			allowReflow: false
+		}).flow('<div class="height300">height300</div>', '<div class="fixed">fixedContent</div>');
+
+		refute(target.querySelector('.cf-preload'));
+		refute(target.querySelector('.cf-preload-fixed'));
+	},
+
 	'//ShouldSetExplicitHeightOnImagesWithSpecifiedAspectRatio' : function() {
 
 		createCf().flow('<div class="height300">height300</div><img style="width: 200px" data-aspect-ratio="2" src="http://www.google.co.uk/images/srpr/logo3w.png" /><div class="height300">height300</div>');

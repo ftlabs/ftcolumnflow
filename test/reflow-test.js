@@ -70,7 +70,7 @@ buster.testCase('Reflow', {
 
 		createCf({
 			columnGap     : 100,
-			columnCount   : 2,
+			columnCount   : 2
 		}).flow('<div class="height3000">height3000</div>');
 
 		var column1 = target.querySelector('.cf-page-1 .cf-column-1');

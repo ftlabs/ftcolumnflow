@@ -412,7 +412,7 @@ buster.testCase('FixedElements', {
 			columnGap     : 25,
 			columnCount   : 3,
 			pagePadding   : 50,
-			pageArrangement : 'vertical',
+			pageArrangement : 'vertical'
 		}).flow('<p>flowedContent</p>', '<div class="fixed anchor-bottom-left">fixedContent</div>');
 
 		var page   = target.querySelector('.cf-page-1');
@@ -707,7 +707,7 @@ buster.testCase('FixedElements', {
 		createCf({
 			columnGap     : 25,
 			columnCount   : 3,
-			columnFragmentMinHeight : 100,
+			columnFragmentMinHeight : 100
 		}).flow('<div class="height600">height600</div>', '<div class="fixed">fixed1</div><div class="fixed attach-page-2">fixed2</div>');
 
 		var page1  = target.querySelector('.cf-page-1');
@@ -723,7 +723,7 @@ buster.testCase('FixedElements', {
 		createCf({
 			columnGap     : 25,
 			columnCount   : 3,
-			columnFragmentMinHeight : 100,
+			columnFragmentMinHeight : 100
 		}).flow('<div class="height700">height700</div>', '<div class="fixed col-span-1">1</div><div class="fixed col-span-2">2</div>');
 
 		var page    = target.querySelector('.cf-page-1');
