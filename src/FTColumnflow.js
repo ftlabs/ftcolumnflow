@@ -535,12 +535,14 @@ var FTColumnflow = (function () {
 
 		function _setFixedElementHeight(element) {
 
-			var computedStyle = window.getComputedStyle(element),
-				indexedColStart, indexedColEnd,
+			var computedStyle, indexedColStart, indexedColEnd,
 				matches, anchorY, anchorX, colSpan, spanDir;
 
 			// Don't do any manipulation on text nodes, or nodes which are hidden
-			if (Node.TEXT_NODE === element.nodeType || 'none' === computedStyle.getPropertyValue('display')) return false;
+			if (Node.TEXT_NODE === element.nodeType) return false;
+
+			computedStyle = window.getComputedStyle(element);
+			if ('none' === computedStyle.getPropertyValue('display')) return false;
 
 			// Determine the anchor point
 			matches = element.className.match(/(\s|^)anchor-(top|middle|bottom)-(left|right|(?:col-(\d+)))(\s|$)/);
