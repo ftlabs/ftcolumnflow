@@ -188,11 +188,15 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 	Assume a 'nowrap' class for every element which matches the list of tags. *(Array, default [])*
 
-*	`showGrid: true */,`
+*	`allowReflow: true,`
+
+	Allow a `reflow()` call to occur. The advantage of disabling this is that ColumnFlow will clean up all preload DOM nodes after the initial `flow`, which are otherwise reused on `reflow()`. *(Boolean, default true)*
+
+*	`showGrid: true,`
 
 	Show the baseline grid - very useful for debugging line-height issues. *(Boolean, default false)*
 
-*	`debug: true */,`
+*	`debug: true,`
 
 	Print internal calls to `_log()` to the console (Useful for development, not used in this release). *(Boolean, default false)*
 
