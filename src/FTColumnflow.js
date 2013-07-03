@@ -1492,6 +1492,10 @@ var FTColumnflow = (function () {
 
 		this.reflow = function(newConfig) {
 
+			if (!config.allowReflow) {
+				throw new FTColumnflowException('ReflowException', 'reflow() was called but "allowReflow" config option was false.');
+			}
+
 			if (newConfig) {
 				_setConfig(newConfig);
 			}

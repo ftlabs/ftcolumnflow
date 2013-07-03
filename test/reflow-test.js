@@ -110,6 +110,17 @@ buster.testCase('Reflow', {
 		assert.match(document.querySelectorAll('style').length, stylesBefore);
 	},
 
+	'ShouldPreventAReflowWhenConfigFlagIsFalse' : function() {
+
+		createCf({
+			allowReflow: false
+		}).flow('<div class="height3000">height3000</div>');
+
+		assert.exception(function test() {
+			cf.reflow();
+		}, 'FTColumnflowReflowException');
+	},
+
 
 /*
 
