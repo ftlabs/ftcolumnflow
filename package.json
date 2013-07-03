@@ -1,6 +1,6 @@
 {
   "name": "ftcolumnflow",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "author": "FT Labs <enquiries@labs.ft.com> (http://labs.ft.com/)",
   "description": "FTColumnflow is a polyfill that fixes the inadequacies of CSS column layouts.",
   "contributors": [
@@ -11,8 +11,8 @@
     "type": "git",
     "url": "git@github.com:ftlabs/ftcolumnflow.git"
   },
-  "scripts" : {
-    "test" : "node_modules/.bin/buster-test"
+  "scripts": {
+    "test": "node_modules/.bin/buster-test"
   },
   "keywords": [
     "css column",
