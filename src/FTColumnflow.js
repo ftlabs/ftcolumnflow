@@ -606,7 +606,7 @@ var FTColumnflow = (function () {
 			}
 
 			// Set an explicit width to that of the columnspan attribute
-			element.style.width = ((indexedColEnd - indexedColStart) * (config.layoutDimensions.columnWidth + config.layoutDimensions.columnGap)) + config.layoutDimensions.columnWidth + 'px';
+			element.style.width = _round(((indexedColEnd - indexedColStart) * (config.layoutDimensions.columnWidth + config.layoutDimensions.columnGap)) + config.layoutDimensions.columnWidth) + 'px';
 
 			return {
 				element:          element,
@@ -777,183 +777,6 @@ var FTColumnflow = (function () {
 
 		}
 
-
-
-		function _addFixedElementOld(element) {
-
-			var computedStyle,
-				indexedColStart,
-				indexedColEnd,
-				anchorY,
-				anchorX,
-				elementTopPos,
-				elementBottomPos,
-				lowestTopPos,
-				highestBottomPos,
-				topSplitPoint,
-				bottomSplitPoint,
-				matches,
-				indexedPageNum,
-				spanDir,
-				colSpan,
-				normalisedElementHeight,
-				columnNum,
-				firstColFragment,
-				lastColFragment,
-				newColumnFragment,
-				newFragmentHeight,
-				fragment,
-				column,
-				fragNum,
-				fragLen;
-
-
-
-
-
-
-
-
-
-
-			// Create any necessary page objects
-			_createPageObjects(pageNum);
-			workingPage = pagedContent[pageNum];
-
-			// Determine the height of the element, taking into account any vertical shift applied to it using margin-top
-			normalisedElementHeight = element.offsetHeight + parseInt(computedStyle.getPropertyValue('margin-top'), 10);
-
-			// Find the most appropriate available space for the element on the page
-			switch (anchorY) {
-
-				case 'top':
-					elementTopPos = config.layoutDimensions.colDefaultTop;
-					lowestTopPos  = colDefaultBottom - normalisedElementHeight;
-
-					for (columnNum = indexedColStart; columnNum <= indexedColEnd; columnNum++) {
-
-						// Find the topmost column fragment
-						firstColFragment = workingPage.columns[columnNum].fragments[0];
-
-						if (!firstColFragment) {
-
-							// Column is full, so place element at the bottom
-							elementTopPos = lowestTopPos;
-						} else {
-
-							// If the fragment starts below the element top position, move the element down
-							if (firstColFragment.top > elementTopPos) {
-								elementTopPos = (firstColFragment.top > lowestTopPos) ? lowestTopPos : firstColFragment.top;
-							}
-						}
-					}
-					elementBottomPos = elementTopPos + normalisedElementHeight;
-					topSplitPoint    = elementTopPos - config.lineHeight;
-					bottomSplitPoint = _roundUpToGrid(elementBottomPos, true);
-					break;
-
-				case 'middle':
-					elementTopPos    = colMiddle - (normalisedElementHeight / 2);
-					topSplitPoint    = _roundDownToGrid(elementTopPos, true);
-					bottomSplitPoint = _roundUpToGrid(elementTopPos + normalisedElementHeight, true);
-
-					if (topSplitPoint < 0) topSplitPoint = 0;
-					if (bottomSplitPoint > maxColumnHeight) bottomSplitPoint = maxColumnHeight;
-					break;
-
-				case 'bottom':
-					elementBottomPos = colDefaultBottom;
-					highestBottomPos = normalisedElementHeight;
-
-					for (columnNum = indexedColStart; columnNum <= indexedColEnd; columnNum++) {
-
-						// Find the bottommost column fragment
-						lastColFragment = workingPage.columns[columnNum].fragments[workingPage.columns[columnNum].fragments.length - 1];
-
-						if (!lastColFragment) {
-
-							// Column is full, so place element at the top
-							elementBottomPos = highestBottomPos;
-						} else {
-
-							// If the fragment ends above the element bottom position, move the element up
-							if (lastColFragment.bottom < elementBottomPos) {
-								elementBottomPos = (lastColFragment.bottom < highestBottomPos) ? highestBottomPos : lastColFragment.bottom;
-							}
-						}
-					}
-
-					elementTopPos    = elementBottomPos - normalisedElementHeight;
-					topSplitPoint    = _roundDownToGrid(elementTopPos, true);
-					bottomSplitPoint = elementBottomPos + config.lineHeight;
-					break;
-			}
-
-
-			/* Alter dimensions and placing of any affected column fragments. */
-
-			// Loop the columns spanned by the element
-			for (columnNum = indexedColStart; columnNum <= indexedColEnd; columnNum++) {
-
-				column = workingPage.columns[columnNum];
-
-				// Loop the fragments
-				for (fragNum = 0, fragLen = column.fragments.length; fragNum < fragLen; fragNum++) {
-
-					fragment = column.fragments[fragNum];
-
-					// The fragment is entirely overlapped by the fixed element, so delete it and continue the loop
-					if (topSplitPoint < fragment.top && bottomSplitPoint > fragment.bottom) {
-						column.fragments.splice(fragNum, 1);
-						fragLen--;
-						continue;
-					} else if (topSplitPoint > fragment.bottom || bottomSplitPoint < fragment.top) {
-
-						// The fragment is not disturbed by the element at all
-						continue;
-					}
-
-					// Determine the height of the new fragment
-					newFragmentHeight = fragment.top + fragment.height - bottomSplitPoint;
-
-					// Modify the original column fragment
-					fragment.height = topSplitPoint - fragment.top;
-					fragment.bottom = fragment.top + fragment.height;
-
-
-					if (!fragment.height || fragment.height < config.columnFragmentMinHeight) {
-
-						// The fragment is now too small, so delete it and decrement the iteration counter
-						column.fragments.splice(fragNum--, 1);
-						fragLen--;
-					}
-
-					// Only create the new fragment if it has enough height
-					if (newFragmentHeight && newFragmentHeight >= config.columnFragmentMinHeight) {
-
-						// Create a new column fragment
-						newColumnFragment = _createColumnFragment();
-
-						newColumnFragment.top    = bottomSplitPoint;
-						newColumnFragment.height = newFragmentHeight;
-						newColumnFragment.bottom = newColumnFragment.top + newColumnFragment.height;
-
-						// Insert it into the collection, and increment the iteration counter
-						column.fragments.splice(++fragNum, 0, newColumnFragment);
-						fragNum++;
-						fragLen++;
-					}
-				}
-			}
-
-			// Save the fixed content string, plus positioning details
-			workingPage.fixed.push({
-				content: _outerHTML(element),
-				top:     elementTopPos,
-				left:    (config.layoutDimensions.colDefaultLeft + (('left' === anchorX) ? 0 : ((config.layoutDimensions.columnWidth + config.layoutDimensions.columnGap) * indexedColStart)))
-			});
-		}
-
 		function _normaliseFlowedElement(element) {
 
 			var p;
@@ -1048,7 +871,10 @@ var FTColumnflow = (function () {
 
 			if (!config.allowReflow) {
 				if (fixedPreloadArea.parentNode) fixedPreloadArea.parentNode.removeChild(fixedPreloadArea);
+				fixedPreloadArea = null;
+
 				if (preloadColumn.parentNode && preloadColumn.parentNode.parentNode) preloadColumn.parentNode.parentNode.removeChild(preloadColumn.parentNode);
+				preloadColumn = null;
 			}
 		}
 
@@ -1229,7 +1055,7 @@ var FTColumnflow = (function () {
 
 					element = page.fixed[i];
 					element.content = _addClass(element.content, fixedElementClassName);
-					pageHTML += _addStyleRule(element.content, 'top:' + element.top + 'px;left:' + element.left + 'px;');
+					pageHTML += _addStyleRule(element.content, 'top:' + _round(element.top) + 'px;left:' + _round(element.left) + 'px;');
 				}
 
 				// Add flowed content for this page
@@ -1353,6 +1179,10 @@ var FTColumnflow = (function () {
 			return resized;
 		}
 
+		function _round(val) {
+			return Math.round(val * 100) / 100;
+		}
+
 		function _replaceStringTokens(string, tokens) {
 			return string.replace(/\[(\w+)\]/g,
 				function _replace(a, b) {
@@ -1443,7 +1273,7 @@ var FTColumnflow = (function () {
 
 
 		function _openColumn(column, indexedColumnNum) {
-			return '<div class="' + config.columnClass + ' ' + config.columnClass + '-' + (indexedColumnNum + 1) + '" style="height: ' + column.height + 'px; top: ' + column.top + 'px;">';
+			return '<div class="' + config.columnClass + ' ' + config.columnClass + '-' + (indexedColumnNum + 1) + '" style="height: ' + _round(column.height) + 'px; top: ' + _round(column.top) + 'px;">';
 		}
 
 
@@ -1584,7 +1414,9 @@ var FTColumnflow = (function () {
 			}
 
 			// Ensure we have an empty target
-			this.target.innerHTML = '';
+			while (this.target.lastChild) {
+				this.target.removeChild(this.target.lastChild);
+			}
 		}
 	};
 
