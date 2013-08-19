@@ -151,6 +151,7 @@ var FTColumnflow = (function () {
 
 			// Collections
 			pagedContent = [],
+			pagedEndContent = [],
 
 			// Counters
 			borderElementIndex,
@@ -630,13 +631,28 @@ var FTColumnflow = (function () {
 
 
 			// Determine the page
-			matches = element.className.match(/(\s|^)attach-page-(\d+)(\s|$)/);
-			if (matches) {
-				pageNum = matches[2] - 1;
-			} else {
-				pageNum = 0;
-			}
+			if (element.classList.contains('attach-page-last')) {
 
+				// Add to a separate store of elements to be added after all the other content is rendered
+				pagedEndContent.push({
+					'fixed': [{
+						content: _outerHTML(element),
+						top:     config.layoutDimensions.colDefaultTop,
+						left:    config.layoutDimensions.colDefaultLeft
+					}]
+				});
+				return;
+
+			} else {
+
+				// Look for a numeric page
+				matches = element.className.match(/(\s|^)attach-page-(\d+)(\s|$)/);
+				if (matches) {
+					pageNum = matches[2] - 1;
+				} else {
+					pageNum = 0;
+				}
+			}
 
 			// Create any necessary page objects
 			_createPageObjects(pageNum);
@@ -807,15 +823,16 @@ var FTColumnflow = (function () {
 
 			// Initialise some variables
 			pagedContent      = [];
+			pagedEndContent   = [];
 
-			indexedPageNum =
-				indexedColumnNum =
-				indexedColumnFrag =
+			indexedPageNum         =
+				indexedColumnNum   =
+				indexedColumnFrag  =
 				borderElementIndex =
-				indexedColumnNum =
-				indexedColumnFrag =
+				indexedColumnNum   =
+				indexedColumnFrag  =
 				topElementOverflow =
-				totalColumnHeight = 0;
+				totalColumnHeight  = 0;
 
 			// Set the maximum column height to a multiple of the lineHeight
 			maxColumnHeight   = config.lineHeight ? _roundDownToGrid(config.layoutDimensions.pageInnerHeight) : config.layoutDimensions.pageInnerHeight;
@@ -1108,13 +1125,30 @@ var FTColumnflow = (function () {
 				outputHTML += _openPage(indexedPageNum) + pageHTML + '</div>';
 			}
 
+			// Add any end pages
+			for (indexedPageNum = 0, page_len = pagedEndContent.length; indexedPageNum < page_len; indexedPageNum++) {
+				pageHTML = '';
+				page     = pagedEndContent[indexedPageNum];
+
+				for (i = 0, l = page.fixed.length; i < l; i++) {
+
+					element = page.fixed[i];
+					element.content = _addClass(element.content, fixedElementClassName);
+					pageHTML += _addStyleRule(element.content, 'top:' + _round(element.top) + 'px;left:' + _round(element.left) + 'px;');
+				}
+
+				// Add the page contents to the HTML string
+				outputHTML += _openPage(pagedContent.length + indexedPageNum) + pageHTML + '</div>';
+			}
+
 			renderArea.innerHTML = outputHTML;
+			page_len = pagedContent.length + pagedEndContent.length;
 
 			// Set an explicit width on the target - not necessary but will allow adjacent content to flow around the flowed columns normally
 			that.target.style.width = (config.viewportWidth * page_len) + 'px';
 
 			// Update the instance page counter
-			that.pagedContentCount = pagedContent.length;
+			that.pagedContentCount = page_len;
 		}
 
 
@@ -1169,7 +1203,7 @@ var FTColumnflow = (function () {
 		function _roundUpToGrid(val, addPadding) {
 
 			var delta   = val % config.lineHeight,
-			    resized = (delta ? (val - delta + config.lineHeight) : val);
+				resized = (delta ? (val - delta + config.lineHeight) : val);
 
 			// If the difference after rounding up is less than the minimum padding, also add one grid line
 			if (addPadding && ((resized - val) < minFixedPadding)) {
