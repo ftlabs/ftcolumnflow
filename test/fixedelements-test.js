@@ -278,7 +278,7 @@ buster.testCase('FixedElements', {
 		assert.match(column3.offsetTop, 220);
 	},
 
-	'ShouldShiftAcrossToLeftToFit' : function() {
+	'ShouldShiftAcrossToRightToFit' : function() {
 
 		createCf().flow('<div class="height600">height600</div><div class="height600">height600</div><div class="height600">height600</div>', '<div class="fixed anchor-top-left col-span-2-left">fixedContent</div>');
 
@@ -556,30 +556,6 @@ buster.testCase('FixedElements', {
 		assert.match(cssProp(column3.childNodes[0], 'margin-top'), '-600px');
 	},
 
-	'ShouldCorrectlyHandleATallVerticallyCenteredElementInCol2' : function() {
-
-		createCf().flow('<div class="height1000">height1000</div>', '<div class="fixed600 anchor-middle-col-2">fixedContent</div>');
-
-		var page    = target.querySelector('.cf-page-1');
-		var fixed   = page.querySelector('.fixed600');
-
-		assert.isNull(target.querySelector('.cf-page-2'));
-
-		assert.match(fixed.offsetTop, 0);
-		assert.match(fixed.offsetLeft, 275);
-
-		assert.isNull(page.querySelector('.cf-column-2'));
-
-		var column1 = page.querySelector('.cf-column-1');
-		var column3 = page.querySelector('.cf-column-3');
-
-		assert.match(column1.offsetTop, 0);
-		assert.match(cssProp(column1.childNodes[0], 'margin-top'), '0px');
-
-		assert.match(column3.offsetTop, 0);
-		assert.match(cssProp(column3.childNodes[0], 'margin-top'), '-600px');
-	},
-
 	'ShouldHandleANormalAndACenteredElementInTheSameColumn' : function() {
 
 		createCf().flow('<div class="height600">height600</div>', '<div class="fixed100 anchor-top-left">fixedContent</div><div class="fixed100 anchor-middle-left">fixedContent</div>');
@@ -764,8 +740,7 @@ buster.testCase('FixedElements', {
 		var fixed   = page.querySelector('.fixed');
 
 		assert.match(fixed.style.width, "250px");
-		assert.match(parseInt(cssProp(fixed, 'width')), 250);
-
+		assert.match(parseInt(cssProp(fixed, 'width'), 10), 250);
 	},
 
 	'ShouldSetExplicitWidthOnFixedElementsOverTwoColumns' : function() {
@@ -777,8 +752,7 @@ buster.testCase('FixedElements', {
 		var fixed   = page.querySelector('.fixed');
 
 		assert.match(fixed.style.width, "525px");
-		assert.match(parseInt(cssProp(fixed, 'width')), 525);
-
+		assert.match(parseInt(cssProp(fixed, 'width'), 10), 525);
 	},
 
 	'ShouldRespectAFloatValueForMinFixedPadding' : function() {
@@ -800,8 +774,8 @@ buster.testCase('FixedElements', {
 			minFixedPadding : 0.5
 		}).flow('<p>flowedContent</p>', '<div class="fixed fixed205">fixedContent</div>');
 
-		var page   = target.querySelector('.cf-page-1');
-		var column = page.querySelector('.cf-column');
+		page   = target.querySelector('.cf-page-1');
+		column = page.querySelector('.cf-column');
 
 		assert.match(column.offsetTop, 220);
 		assert.match(column.offsetHeight, 380);
@@ -814,8 +788,8 @@ buster.testCase('FixedElements', {
 			minFixedPadding : 1.5
 		}).flow('<p>flowedContent</p>', '<div class="fixed">fixedContent</div>');
 
-		var page   = target.querySelector('.cf-page-1');
-		var column = page.querySelector('.cf-column');
+		page   = target.querySelector('.cf-page-1');
+		column = page.querySelector('.cf-column');
 
 		assert.match(column.offsetTop, 240);
 		assert.match(column.offsetHeight, 360);
@@ -832,8 +806,50 @@ buster.testCase('FixedElements', {
 
 		assert.match(img.style.width, "200px");
 		assert.match(img.style.height, "100px");
-		assert.match(parseInt(cssProp(img, 'width')), 200);
-		assert.match(parseInt(cssProp(img, 'height')), 100);
+		assert.match(parseInt(cssProp(img, 'width'), 10), 200);
+		assert.match(parseInt(cssProp(img, 'height'), 10), 100);
+	},
+
+	'ShouldAddLastPageElementToFirstPageWhenThereIsNoOtherContent' : function() {
+
+		createCf().flow('', '<div class="fixed attach-page-last">last page content</div>');
+
+		var page1 = target.querySelector('.cf-page-1');
+		var fixed = page1.querySelector('.fixed');
+
+		assert(fixed instanceof HTMLElement);
+		assert.match(fixed.offsetTop, 0);
+	},
+
+	'ShouldAddLastPageElementToLastPageWhenThereIsOtherContent' : function() {
+
+		createCf().flow('<div class="height300">height300</div>', '<div class="fixed attach-page-last">last page content</div><div class="fixed attach-page-2">fixed2</div>');
+
+		var page2 = target.querySelector('.cf-page-2');
+		var page3 = target.querySelector('.cf-page-3');
+
+		var fixedP2   = page2.querySelector('.fixed.attach-page-2');
+		var fixedLast = page3.querySelector('.fixed.attach-page-last');
+
+		assert(fixedLast instanceof HTMLElement);
+		assert.match(fixedLast.offsetTop, 0);
+	},
+
+	'ShouldAddMultipleLastPageElementsInOrder' : function() {
+
+		createCf().flow('<div class="height300">height300</div>', '<div class="fixed attach-page-last attach-page-last-1">last page content</div><div class="fixed attach-page-last attach-page-last-2">last page content</div>');
+
+		var page2 = target.querySelector('.cf-page-2');
+		var page3 = target.querySelector('.cf-page-3');
+
+		var fixedLast1 = page2.querySelector('.attach-page-last-1');
+		var fixedLast2 = page3.querySelector('.attach-page-last-2');
+
+		assert(fixedLast1 instanceof HTMLElement);
+		assert(fixedLast2 instanceof HTMLElement);
+
+		assert.match(fixedLast1.offsetTop, 0);
+		assert.match(fixedLast2.offsetTop, 0);
 	},
 
 
