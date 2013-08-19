@@ -257,9 +257,9 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 			Fixed element should span `n` columns (or all columns), optionally specifying a direction in which to span. (Default: col-span-1, default span direction: right).
 
-		* `attach-page-<n>`
+		* `attach-page-<n|last>`
 
-			Fixed element should appear on page `n`. (Default: attach-page-1).
+			If numeric `n` is specified, fixed element should appear on page `n`. `attach-page-last` will create a new, empty page at the end, after all the fixed and flowed content is rendered. Multiple `attach-page-last` elements will appear on individual pages, in the order of declaration. (Default: attach-page-1).
 
 *	`reflow({});`
 
