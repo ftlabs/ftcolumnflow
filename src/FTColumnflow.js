@@ -460,15 +460,22 @@ var FTColumnflow = (function () {
 
 		function _findLineHeight() {
 
-			var lineHeights, i, l, node, testNode, testLineHeight;
+			var lineHeights, i, l, node, testNode, testLineHeight, testText;
 
 			// If the grid height is not pre-set, we need to determine it
 			if (!config.lineHeight) {
-
 				if (!lineHeightTestContents) {
-
+					// strip all letters, numbers and usual symbols (spaces, slashes, line-breaks, etc)
+					if ('string' === typeof flowedContent) {
+						testText = flowedContent.substring(0, 99).replace(/[a-zA-Z0-9<>@#"'\s\/\.\r\n]/mg, '');
+					}
+					else {
+						testText = flowedContent.innerText.substring(0, 99).replace(/[a-zA-Z0-9<>@#"'\s\/\.\r\n]/mg, '');
+					}
+					// add a letter just in case
+					testText = 'x' + testText.substring(0, 9);
 					// 10 lines of text
-					lineHeightTestContents = new Array(10).join('x<br />') + 'x';
+					lineHeightTestContents = new Array(10).join(testText + '<br />') + testText;
 				}
 
 				// Here we take the mode (most common) line-height value from the first few
