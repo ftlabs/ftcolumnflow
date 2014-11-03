@@ -122,6 +122,26 @@ One important consideration for this approach is that, using `overflow: hidden`,
 
 Setting the `standardiseLineHeight` configuration option to `true` (it defaults to `false`) will automatically determine the baseline grid from your page's CSS. It will ensure that column heights are multiples of the grid height, and will pad all fixed and flowed elements to ensure they conform to the grid. See the [same example with `standardiseLineHeight: true`](http://ftlabs.github.com/ftcolumnflow/1.html).
 
+## Troubleshooting
+
+* Clipped lines of text suggest a problem with the 'grid height' of the ColumnFlow layout. The [broken example](http://ftlabs.github.com/ftcolumnflow/7.html) has a mismatch between the paragraph line-height and the baseline grid. Look at the `lineHeight` and `standardiseLineHeight` options to address this.
+* Missing or duplicated lines of text suggest a problem with the late-loading of resources. See [example issue](https://github.com/ftlabs/ftcolumnflow/issues/7). If a resource (typically an image or custom @font-face font) loads *after* ColumnFlow has measured the content and constructed the columns, it will shift the content up/down in each column, resulting in missing or duplicated lines. The solution is to wait until all page resources are loaded before running ColumnFlow; for fonts, use a custom font-loader such as [Web Font Loader](https://github.com/typekit/webfontloader).
+* There may also be issues with CSS selectors which fail to match when the content is split into columns. A rule such as `p + p { text-indent: 30px };`, for example, would match any paragraph which follows another. However, when the content is flowed over columns, the second paragraph may actually be the first element child of a column, and the rule would therefore stop matching. You'll likely see missing text in this case, as the paragraph's dimensions will have changed after it was measured by ColunFlow. It may be possible to address the requirements in a different way; in this example, the following might work:
+
+```
+/* Indent all paragraphs which follow another, and all paragraphs appearing in columns */
+p + p,
+.cf-column p {
+	text-indent: 30px;
+}
+
+/* Don't indent the first paragraph of the first column of the first page */
+.cf-page-1 .cf-column-1 p:first-of-type {
+	text-indent: 0;
+}
+```
+
+
 ## Configuration
 
 Configuration options can be specified at create-time by passing a JSON object as the third argument to the `FTColumnflow` constructor. All parameters are optional; any which are specified will override default values.
