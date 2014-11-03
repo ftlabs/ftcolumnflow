@@ -313,7 +313,7 @@ FTColumnflow supports the following browsers:
 * Mobile Safari (iOS 5+)
 * Android browser (ICS+)
 * Blackberry browser (PlaybookOS 2.0.1+)
-* Microsoft Internet Explorer (10+) (Although IE9 may be supported with the addition of a simple [classList polyfill](https://github.com/eligrey/classList.js) - see [discussion](https://github.com/ftlabs/ftcolumnflow/issues/24).
+* Microsoft Internet Explorer (10+), although IE9 may be supported with the addition of a simple [classList polyfill](https://github.com/eligrey/classList.js) - see [discussion](https://github.com/ftlabs/ftcolumnflow/issues/24).
 
 ## Testing
 
