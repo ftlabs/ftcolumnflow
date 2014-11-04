@@ -920,7 +920,7 @@ var FTColumnflow = (function () {
 					element.style.paddingBottom = originalPadding + 'px';
 				}
 
-				totalElementHeight   = nextElement ? (nextElement.offsetTop - element.offsetTop) : element.offsetHeight;
+				totalElementHeight   = _getElementHeight(element, nextElement);
 				desiredElementHeight = _roundUpToGrid(totalElementHeight);
 
 				newPadding = desiredElementHeight - totalElementHeight + existingPadding;
@@ -942,6 +942,13 @@ var FTColumnflow = (function () {
 
 			// TODO:GC: Remove this loop-protection check
 			if (loopCount >= 30) console.error('FTColumnflow: Caught and destroyed a loop when wrapping columns for element', element.outerHTML.substr(0, 200) + '...');
+		}
+
+		function _getElementHeight(element, nextElement) {
+			if (!element.getBoundingClientRect) {
+				return nextElement ? (nextElement.offsetTop - element.offsetTop) : element.offsetHeight;
+			}
+			return nextElement ? nextElement.getBoundingClientRect().top - element.getBoundingClientRect().top : element.getBoundingClientRect().height;
 		}
 
 		function _wrapColumn(currentElementIndex, overflow) {
