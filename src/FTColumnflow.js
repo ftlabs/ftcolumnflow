@@ -905,8 +905,8 @@ var FTColumnflow = (function () {
 			// Check if it's necessary to sanitize elements to conform to the baseline grid
 			if (config.standardiseLineHeight) {
 
-				originalPadding = parseInt(element.getAttribute('data-cf-original-padding'), 10) || null;
-				existingPadding = parseInt(window.getComputedStyle(element).getPropertyValue('padding-bottom'), 10);
+				originalPadding = parseFloat(element.getAttribute('data-cf-original-padding'), 10) || null;
+				existingPadding = parseFloat(window.getComputedStyle(element).getPropertyValue('padding-bottom'), 10);
 
 				if (null === originalPadding) {
 					originalPadding = existingPadding;
