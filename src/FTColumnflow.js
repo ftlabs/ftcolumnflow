@@ -360,6 +360,8 @@ var FTColumnflow = (function () {
 					config.layoutDimensions.columnWidth = ((config.layoutDimensions.pageInnerWidth + config.layoutDimensions.columnGap) / config.layoutDimensions.columnCount) - config.layoutDimensions.columnGap;
 				}
 			}
+
+			config.layoutDimensions.columnHeight = config.lineHeight ? _roundDownToGrid(config.layoutDimensions.pageInnerHeight) : config.layoutDimensions.pageInnerHeight;
 		}
 
 
