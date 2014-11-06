@@ -6,7 +6,7 @@
 		<style>
 			body { margin: 10px; padding: 0; }
 			#viewport { width: 600px; height: 300px; }
-			#flowedContent, #fixedContent { display: none; }
+			#flowedContent, #fixedContent { visibility: hidden; }
 
 			.cf-page { outline: 1px solid red; background-color: rgba(255, 0, 0, 0.1); }
 			.cf-column { outline: 1px solid blue; background-color: rgba(0, 0, 255, 0.1); }
@@ -14,11 +14,21 @@
 			strong { color: red; }
 
 			h3 { margin: 0; font-size: 1em; font-weight: normal; color: blue; }
+			h1, h2, h3, h4, h5, h6 { margin: 20px 0 10px; padding: 0; font-weight: bold; -webkit-font-smoothing: antialiased; cursor: text; position: relative; }
+			body { font: 14px Helvetica,arial,freesans,clean,sans-serif; color: #333; font-size: 14px; line-height: 1.6; }
+			ul { padding-left: 30px; margin: 15px 0; }
+			li { margin: 0; padding: 0; border: 0; }
+			a { color: #4183C4; text-decoration: none; }
+			a:hover { text-decoration: underline; }
+			a:active { outline: none; }
 		</style>
 	</head>
 
 
 	<body>
+
+		<h1>noWrap class and noWrapOnTags config setting</h1>
+		<h2><a href='./index.html'>Back</a></h2>
 
 		<div id="viewport">
 			<div id="target">
@@ -46,7 +56,7 @@
 			var cf = new FTColumnflow('target', 'viewport', {
 				columnCount:           3,
 				standardiseLineHeight: true,
-				pagePadding:           50,
+				pagePadding:           20,
 			});
 
 			cf.flow(document.getElementById('flowedContent'));

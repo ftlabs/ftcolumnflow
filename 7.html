@@ -6,12 +6,29 @@
 		<style>
 			body { margin: 10px; padding: 0; }
 			#viewport { width: 900px; height: 600px; }
-			#flowedContent, #fixedContent { display: none; }
+			#flowedContent, #fixedContent { visibility: hidden; }
+			p {
+				margin-bottom: 16px;
+				line-height: 18px;
+			}
+			h3 { margin: 0; font-size: 1em; font-weight: normal; color: blue; }
+			h1, h2, h3, h4, h5, h6 { margin: 20px 0 10px; padding: 0; font-weight: bold; -webkit-font-smoothing: antialiased; cursor: text; position: relative; }
+			body { font: 14px Helvetica,arial,freesans,clean,sans-serif; color: #333; font-size: 14px; line-height: 1.6; }
+			ul { padding-left: 30px; margin: 15px 0; }
+			li { margin: 0; padding: 0; border: 0; }
+			a { color: #4183C4; text-decoration: none; }
+			a:hover { text-decoration: underline; }
+			a:active { outline: none; }
 		</style>
 	</head>
 
 
 	<body>
+
+		<h1>Broken FTColumnflow example</h1>
+		<h2><a href='./index.html'>Back</a></h2>
+		<p>Here, the line-height of the paragraphs, their bottom margin, and the height of the columns do not conform to a consistent baseline grid. For a succesful layout with FTColumnflow, it is important that the column height is a whole multiple of the grid height and that all elements are placed on the grid, or clipping will occur.</p>
+		<p>Setting the standardiseLineHeight configuration option to true (it defaults to false) will automatically determine the baseline grid from your page's CSS. It will ensure that column heights are multiples of the grid height, and will pad all fixed and flowed elements to ensure they conform to the grid. See the <a href="./1.html">same example with standardiseLineHeight: true</a>.</p>
 
 		<div id="viewport">
 			<div id="target">
@@ -50,6 +67,7 @@
 			var cf = new FTColumnflow('target', 'viewport', {
 				columnCount:           3,
 				pagePadding:           30,
+				showGrid:              true
 			});
 
 			cf.flow(document.getElementById('flowedContent'), document.getElementById('fixedContent'));
