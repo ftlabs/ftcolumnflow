@@ -182,7 +182,7 @@ buster.testCase('BaselineGrid', {
 		assert.match(parags[2].offsetTop, 146);
 	},
 
-	'ShouldPadElementsWhenConfigured' : function() {
+	'ShouldRoundUpElementMarginsWhenConfigured' : function() {
 
 		document.body.className = 'unpadded-parags';
 
@@ -193,16 +193,29 @@ buster.testCase('BaselineGrid', {
 		var column = target.querySelector('.cf-column-1');
 		var parags = column.getElementsByTagName('p');
 
-		assert.match(parags[0].offsetHeight, 60);
-		assert.match(parags[1].offsetHeight, 60);
-		assert.match(parags[2].offsetHeight, 60);
-
+		// 53-px parags with a 20px margin, so rounded-up to 80px
 		assert.match(parags[0].offsetTop, 0);
 		assert.match(parags[1].offsetTop, 80);
 		assert.match(parags[2].offsetTop, 160);
 	},
 
-	'ShouldPadElementsIgnoringPlainTextNodes' : function() {
+	'StandardisedLineHeightShouldNotAffectElementHeight' : function() {
+
+		document.body.className = 'unpadded-parags';
+
+		createCf({
+			standardiseLineHeight : true,
+		}).flow('<p>Test paragraph</p><p>Test paragraph</p><p>Test paragraph</p>');
+
+		var column = target.querySelector('.cf-column-1');
+		var parags = column.getElementsByTagName('p');
+
+		assert.match(parags[0].offsetHeight, 53);
+		assert.match(parags[1].offsetHeight, 53);
+		assert.match(parags[2].offsetHeight, 53);
+	},
+
+	'ShouldRoundUpElementsIgnoringPlainTextNodes' : function() {
 
 		document.body.className = 'unpadded-parags';
 
@@ -212,10 +225,6 @@ buster.testCase('BaselineGrid', {
 
 		var column = target.querySelector('.cf-column-1');
 		var parags = column.getElementsByTagName('p');
-
-		assert.match(parags[0].offsetHeight, 60);
-		assert.match(parags[1].offsetHeight, 60);
-		assert.match(parags[2].offsetHeight, 60);
 
 		assert.match(parags[0].offsetTop, 0);
 		assert.match(parags[1].offsetTop, 80);

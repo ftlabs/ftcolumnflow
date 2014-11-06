@@ -194,7 +194,7 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 *	`standardiseLineHeight: true,`
 
-	If false, FTColumnflow assumes all column content is corrected/padded to conform to a baseline grid (for example, paragraph margins should be a multiple of their line-height value), and determines the grid height from the lineheight of a paragraph. If true, FTColumnflow uses the mode of the first few line-heights found, and adds padding to all other element to conform to the grid. *(Boolean, default false)*
+	If false, FTColumnflow assumes all column content is corrected/padded to conform to a baseline grid (for example, paragraph margins should be a multiple of their line-height value), and determines the grid height from the lineheight of a paragraph. If true, FTColumnflow uses the mode of the first few line-heights found, and adds margin to all other element to conform to the grid. *(Boolean, default false)*
 
 *	`lineHeight: 20`
 
@@ -208,11 +208,15 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 	Assume a 'nowrap' class for every element which matches the list of tags. *(Array, default [])*
 
-*	`showGrid: true */,`
+*	`allowReflow: true,`
+
+	Allow a `reflow()` call to occur. The advantage of disabling this is that ColumnFlow will clean up all preload DOM nodes after the initial `flow`, which are otherwise reused on `reflow()`. *(Boolean, default true)*
+
+*	`showGrid: true,`
 
 	Show the baseline grid - very useful for debugging line-height issues. *(Boolean, default false)*
 
-*	`debug: true */,`
+*	`debug: true,`
 
 	Print internal calls to `_log()` to the console (Useful for development, not used in this release). *(Boolean, default false)*
 
@@ -273,9 +277,9 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 			Fixed element should span `n` columns (or all columns), optionally specifying a direction in which to span. (Default: col-span-1, default span direction: right).
 
-		* `attach-page-<n>`
+		* `attach-page-<n|last>`
 
-			Fixed element should appear on page `n`. (Default: attach-page-1).
+			If numeric `n` is specified, fixed element should appear on page `n`. `attach-page-last` will create a new, empty page at the end, after all the fixed and flowed content is rendered. Multiple `attach-page-last` elements will appear on individual pages, in the order of declaration. (Default: attach-page-1).
 
 *	`reflow({});`
 
