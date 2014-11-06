@@ -124,7 +124,6 @@ var FTColumnflow = (function () {
 			fixedContent,
 
 			// Dimensions
-			maxColumnHeight,
 			colDefaultBottom,
 			colMiddle,
 			minFixedPadding,
@@ -522,6 +521,9 @@ var FTColumnflow = (function () {
 				config.lineHeight = _mode(lineHeights);
 			}
 
+			// Now the line-height is known, the column height can be determined
+			config.layoutDimensions.columnHeight = config.lineHeight ? _roundDownToGrid(config.layoutDimensions.pageInnerHeight) : config.layoutDimensions.pageInnerHeight;
+
 			// For debugging, show the grid lines with CSS
 			if (showGrid) {
 
@@ -696,7 +698,7 @@ var FTColumnflow = (function () {
 					bottomSplitPoint = _roundUpToGrid(elementTopPos + normalisedElementHeight, true);
 
 					if (topSplitPoint < 0) topSplitPoint = 0;
-					if (bottomSplitPoint > maxColumnHeight) bottomSplitPoint = maxColumnHeight;
+					if (bottomSplitPoint > config.layoutDimensions.columnHeight) bottomSplitPoint = config.layoutDimensions.columnHeight;
 					break;
 
 				case 'bottom':
@@ -835,9 +837,8 @@ var FTColumnflow = (function () {
 				totalColumnHeight  = 0;
 
 			// Set the maximum column height to a multiple of the lineHeight
-			maxColumnHeight   = config.lineHeight ? _roundDownToGrid(config.layoutDimensions.pageInnerHeight) : config.layoutDimensions.pageInnerHeight;
-			colDefaultBottom  = maxColumnHeight + config.layoutDimensions.colDefaultTop;
-			colMiddle         = config.layoutDimensions.colDefaultTop + (maxColumnHeight / 2);
+			colDefaultBottom  = config.layoutDimensions.columnHeight + config.layoutDimensions.colDefaultTop;
+			colMiddle         = config.layoutDimensions.colDefaultTop + (config.layoutDimensions.columnHeight / 2);
 			minFixedPadding   = config.minFixedPadding * config.lineHeight;
 			fixedPadding      = _roundUpToGrid(minFixedPadding);
 
@@ -1276,7 +1277,7 @@ var FTColumnflow = (function () {
 			return {
 				elements:    [],
 				overflow:    0,
-				height:      maxColumnHeight,
+				height:      config.layoutDimensions.columnHeight,
 				top:         config.layoutDimensions.colDefaultTop,
 				bottom:      colDefaultBottom
 			};
