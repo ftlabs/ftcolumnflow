@@ -23,6 +23,7 @@
   "devDependencies": {
     "buster": "~0.7",
     "grunt": "~0.4",
+    "grunt-cli": "~0.1",
     "grunt-buster": "~0.3",
     "phantomjs": "~1.9"
   },
