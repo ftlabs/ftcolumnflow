@@ -182,9 +182,43 @@ buster.testCase('BaselineGrid', {
 		assert.match(parags[2].offsetTop, 146);
 	},
 
-	'ShouldRoundUpElementMarginsWhenConfigured' : function() {
+	'ShouldRoundUpAndCollapseElementMarginsWhenConfigured' : function() {
 
 		document.body.className = 'unpadded-parags';
+
+		createCf({
+			standardiseLineHeight : true,
+		}).flow('<p>Test paragraph</p><p>Test paragraph</p><p>Test paragraph</p>');
+
+		var column = target.querySelector('.cf-column-1');
+		var parags = column.getElementsByTagName('p');
+
+		// 53-px parags with a collapsed 20px top/bottom margin, so rounded-up to 80px
+		assert.match(parags[0].offsetTop, 0);
+		assert.match(parags[1].offsetTop, 80);
+		assert.match(parags[2].offsetTop, 160);
+	},
+
+	'ShouldRoundUpTopMargin' : function() {
+
+		document.body.className = 'unpadded-parags top-margin';
+
+		createCf({
+			standardiseLineHeight : true,
+		}).flow('<p>Test paragraph</p><p>Test paragraph</p><p>Test paragraph</p>');
+
+		var column = target.querySelector('.cf-column-1');
+		var parags = column.getElementsByTagName('p');
+
+		// 53-px parags with a 20px margin, so rounded-up to 80px
+		assert.match(parags[0].offsetTop, 0);
+		assert.match(parags[1].offsetTop, 80);
+		assert.match(parags[2].offsetTop, 160);
+	},
+
+	'ShouldRoundUpBottomMargin' : function() {
+
+		document.body.className = 'unpadded-parags bottom-margin';
 
 		createCf({
 			standardiseLineHeight : true,

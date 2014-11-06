@@ -74,13 +74,13 @@ var FTColumnflow = (function () {
 		},
 
 		// CSS Style declarations
-		cssStyles = '#[targetId] { position: relative; height: 100%; }\n'
-		+ '#[targetId] .[preloadAreaClassName].[pageClass] { visibility: hidden; position: absolute; overflow: hidden; }\n'
-		+ '#[targetId] .[preloadFixedAreaClassName] { visibility: hidden; position: absolute; }\n'
-		+ '#[targetId] .[pageClass] { position: absolute; width: [viewportWidth]px; height: [viewportHeight]px; [pageArrangement] }\n'
-		+ '#[targetId] .[columnClass] { position: absolute; width: [columnWidth]px; overflow: hidden; }\n'
-		+ '#[targetId] .[pageClass] .[fixedElementClassName] { position: absolute; }\n'
-		+ '#[targetId] .[pageClass] .[columnClass] > :first-child { margin-top: 0px; }\n',
+		cssStyles = '#[targetId] { position: relative; height: 100%; }\n' +
+		'#[targetId] .[preloadAreaClassName].[pageClass] { visibility: hidden; position: absolute; overflow: hidden; }\n' +
+		'#[targetId] .[preloadFixedAreaClassName] { visibility: hidden; position: absolute; }\n' +
+		'#[targetId] .[pageClass] { position: absolute; width: [viewportWidth]px; height: [viewportHeight]px; [pageArrangement] }\n' +
+		'#[targetId] .[columnClass] { position: absolute; width: [columnWidth]px; overflow: hidden; }\n' +
+		'#[targetId] .[pageClass] .[fixedElementClassName] { position: absolute; }\n' +
+		'#[targetId] .[pageClass] .[columnClass] > :first-child { margin-top: 0px; }\n',
 
 		cssColumnStyles = '#[targetId] .[columnClass].[columnClass]-[columnNum] { left: [leftPos]px; }\n',
 
@@ -897,36 +897,45 @@ var FTColumnflow = (function () {
 
 		function _addFlowedElement(element, index) {
 
-			var originalMargin, existingMargin, totalElementHeight,
-				desiredElementHeight, newMargin, overflow, loopCount,
+			var originalMargin, existingMargin, nextElementOffset, elementHeight,
+				newMargin, largestMargin, overflow, loopCount,
 
 				nextElement = element.nextSibling;
 
 			// Check if it's necessary to sanitize elements to conform to the baseline grid
 			if (config.standardiseLineHeight) {
 
-				originalMargin = parseFloat(element.getAttribute('data-cf-original-margin'), 10) || null;
 				existingMargin = parseFloat(window.getComputedStyle(element).getPropertyValue('margin-bottom'), 10);
 
-				if (null === originalMargin) {
-					originalMargin = existingMargin;
-					element.setAttribute('data-cf-original-margin', originalMargin);
+				// If reflowing is enabled, try to read the original margin for the
+				// element, in case it was already modified
+				if (config.allowReflow) {
+					originalMargin = parseFloat(element.getAttribute('data-cf-original-margin'), 10) || null;
+					if (null === originalMargin) {
+						originalMargin = existingMargin;
+						element.setAttribute('data-cf-original-margin', originalMargin);
+					} else if (originalMargin !== existingMargin) {
+
+						// Return the element to its original margin
+						element.style.marginBottom = originalMargin + 'px';
+					}
 				} else {
-					existingMargin = originalMargin;
+					originalMargin = existingMargin;
 				}
 
-				// Return the element to its original margin
-				if (originalMargin !== existingMargin) {
-					element.style.marginBottom = originalMargin + 'px';
-				}
+				nextElementOffset = _getNextElementOffset(element, nextElement);
+				elementHeight     = element.offsetHeight;
 
-				totalElementHeight   = _getElementHeight(element, nextElement);
-				desiredElementHeight = _roundUpToGrid(totalElementHeight);
+				// The next element's top is not aligned to the grid
+				if (nextElementOffset % config.lineHeight) {
 
-				newMargin = desiredElementHeight - totalElementHeight + existingMargin;
+					// Allow for collapsing margins
+					largestMargin = Math.max(existingMargin, nextElement ? parseFloat(window.getComputedStyle(nextElement).getPropertyValue('margin-top'), 10) : 0);
+					newMargin     = _roundUpToGrid(elementHeight) - elementHeight + _roundUpToGrid(largestMargin);
 
-				if (newMargin !== existingMargin) {
-					element.style.marginBottom = newMargin + 'px';
+					if (newMargin !== existingMargin) {
+						element.style.marginBottom = newMargin + 'px';
+					}
 				}
 			}
 
@@ -944,7 +953,7 @@ var FTColumnflow = (function () {
 			if (loopCount >= 30) console.error('FTColumnflow: Caught and destroyed a loop when wrapping columns for element', element.outerHTML.substr(0, 200) + '...');
 		}
 
-		function _getElementHeight(element, nextElement) {
+		function _getNextElementOffset(element, nextElement) {
 			if (!element.getBoundingClientRect) {
 				return nextElement ? (nextElement.offsetTop - element.offsetTop) : element.offsetHeight;
 			}
