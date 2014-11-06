@@ -174,7 +174,7 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 *	`standardiseLineHeight: true,`
 
-	If false, FTColumnflow assumes all column content is corrected/padded to conform to a baseline grid (for example, paragraph margins should be a multiple of their line-height value), and determines the grid height from the lineheight of a paragraph. If true, FTColumnflow uses the mode of the first few line-heights found, and adds padding to all other element to conform to the grid. *(Boolean, default false)*
+	If false, FTColumnflow assumes all column content is corrected/padded to conform to a baseline grid (for example, paragraph margins should be a multiple of their line-height value), and determines the grid height from the lineheight of a paragraph. If true, FTColumnflow uses the mode of the first few line-heights found, and adds margin to all other element to conform to the grid. *(Boolean, default false)*
 
 *	`lineHeight: 20`
 
