@@ -12,7 +12,7 @@
     "url": "git@github.com:ftlabs/ftcolumnflow.git"
   },
   "scripts": {
-    "test": "node_modules/.bin/buster-test"
+    "test": "./node_modules/.bin/grunt test"
   },
   "keywords": [
     "css column",
@@ -23,6 +23,7 @@
   "devDependencies": {
     "buster": "~0.7",
     "grunt": "~0.4",
+    "grunt-cli": "~0.1",
     "grunt-buster": "~0.3",
     "phantomjs": "~1.9"
   },

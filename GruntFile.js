@@ -11,4 +11,5 @@ module.exports = function(grunt) {
     }
   });
   grunt.loadNpmTasks('grunt-buster');
+  grunt.registerTask('test', ['buster:test']);
 };
