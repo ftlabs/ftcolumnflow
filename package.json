@@ -21,7 +21,10 @@
     "polyfill"
   ],
   "devDependencies": {
-    "buster": "~0.6.2"
+    "buster": "~0.7",
+    "grunt": "~0.4",
+    "grunt-buster": "~0.3",
+    "phantomjs": "~1.9"
   },
   "license": "MIT",
   "homepage": "https://github.com/ftlabs/ftcolumnflow"

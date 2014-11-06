@@ -14,3 +14,7 @@ function createCf(config) {
 function cssProp(element, property) {
     return window.getComputedStyle(element, null).getPropertyValue(property);
 }
+
+var assert = buster.assert;
+var refute = buster.refute;
+var expect = buster.expect;
