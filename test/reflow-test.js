@@ -70,7 +70,7 @@ buster.testCase('Reflow', {
 
 		createCf({
 			columnGap     : 100,
-			columnCount   : 2,
+			columnCount   : 2
 		}).flow('<div class="height3000">height3000</div>');
 
 		var column1 = target.querySelector('.cf-page-1 .cf-column-1');
@@ -108,6 +108,17 @@ buster.testCase('Reflow', {
 
 		assert.isNull(document.getElementById('targetid'));
 		assert.match(document.querySelectorAll('style').length, stylesBefore);
+	},
+
+	'ShouldPreventAReflowWhenConfigFlagIsFalse' : function() {
+
+		createCf({
+			allowReflow: false
+		}).flow('<div class="height3000">height3000</div>');
+
+		assert.exception(function test() {
+			cf.reflow();
+		}, 'FTColumnflowReflowException');
 	},
 
 

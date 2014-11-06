@@ -122,6 +122,26 @@ One important consideration for this approach is that, using `overflow: hidden`,
 
 Setting the `standardiseLineHeight` configuration option to `true` (it defaults to `false`) will automatically determine the baseline grid from your page's CSS. It will ensure that column heights are multiples of the grid height, and will pad all fixed and flowed elements to ensure they conform to the grid. See the [same example with `standardiseLineHeight: true`](http://ftlabs.github.com/ftcolumnflow/1.html).
 
+## Troubleshooting
+
+* Clipped lines of text suggest a problem with the 'grid height' of the ColumnFlow layout. The [broken example](http://ftlabs.github.com/ftcolumnflow/7.html) has a mismatch between the paragraph line-height and the baseline grid. Look at the `lineHeight` and `standardiseLineHeight` options to address this.
+* Missing or duplicated lines of text suggest a problem with the late-loading of resources. See [example issue](https://github.com/ftlabs/ftcolumnflow/issues/7). If a resource (typically an image or custom @font-face font) loads *after* ColumnFlow has measured the content and constructed the columns, it will shift the content up/down in each column, resulting in missing or duplicated lines. The solution is to wait until all page resources are loaded before running ColumnFlow; for fonts, use a custom font-loader such as [Web Font Loader](https://github.com/typekit/webfontloader).
+* There may also be issues with CSS selectors which fail to match when the content is split into columns. A rule such as `p + p { text-indent: 30px };`, for example, would match any paragraph which follows another. However, when the content is flowed over columns, the second paragraph may actually be the first element child of a column, and the rule would therefore stop matching. You'll likely see missing text in this case, as the paragraph's dimensions will have changed after it was measured by ColunFlow. It may be possible to address the requirements in a different way; in this example, the following might work:
+
+```css
+/* Indent all paragraphs which follow another, and all paragraphs appearing in columns */
+p + p,
+.cf-column p {
+	text-indent: 30px;
+}
+
+/* Don't indent the first paragraph of the first column of the first page */
+.cf-page-1 .cf-column-1 p:first-of-type {
+	text-indent: 0;
+}
+```
+
+
 ## Configuration
 
 Configuration options can be specified at create-time by passing a JSON object as the third argument to the `FTColumnflow` constructor. All parameters are optional; any which are specified will override default values.
@@ -174,7 +194,7 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 *	`standardiseLineHeight: true,`
 
-	If false, FTColumnflow assumes all column content is corrected/padded to conform to a baseline grid (for example, paragraph margins should be a multiple of their line-height value), and determines the grid height from the lineheight of a paragraph. If true, FTColumnflow uses the mode of the first few line-heights found, and adds padding to all other element to conform to the grid. *(Boolean, default false)*
+	If false, FTColumnflow assumes all column content is corrected/padded to conform to a baseline grid (for example, paragraph margins should be a multiple of their line-height value), and determines the grid height from the lineheight of a paragraph. If true, FTColumnflow uses the mode of the first few line-heights found, and adds margin to all other element to conform to the grid. *(Boolean, default false)*
 
 *	`lineHeight: 20`
 
@@ -188,11 +208,15 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 	Assume a 'nowrap' class for every element which matches the list of tags. *(Array, default [])*
 
-*	`showGrid: true */,`
+*	`allowReflow: true,`
+
+	Allow a `reflow()` call to occur. The advantage of disabling this is that ColumnFlow will clean up all preload DOM nodes after the initial `flow`, which are otherwise reused on `reflow()`. *(Boolean, default true)*
+
+*	`showGrid: true,`
 
 	Show the baseline grid - very useful for debugging line-height issues. *(Boolean, default false)*
 
-*	`debug: true */,`
+*	`debug: true,`
 
 	Print internal calls to `_log()` to the console (Useful for development, not used in this release). *(Boolean, default false)*
 
@@ -253,9 +277,9 @@ Column dimension configuration is designed to be as close as possible to the [CS
 
 			Fixed element should span `n` columns (or all columns), optionally specifying a direction in which to span. (Default: col-span-1, default span direction: right).
 
-		* `attach-page-<n>`
+		* `attach-page-<n|last>`
 
-			Fixed element should appear on page `n`. (Default: attach-page-1).
+			If numeric `n` is specified, fixed element should appear on page `n`. `attach-page-last` will create a new, empty page at the end, after all the fixed and flowed content is rendered. Multiple `attach-page-last` elements will appear on individual pages, in the order of declaration. (Default: attach-page-1).
 
 *	`reflow({});`
 
@@ -313,7 +337,7 @@ FTColumnflow supports the following browsers:
 * Mobile Safari (iOS 5+)
 * Android browser (ICS+)
 * Blackberry browser (PlaybookOS 2.0.1+)
-* Microsoft Internet Explorer (10+)
+* Microsoft Internet Explorer (10+), although IE9 may be supported with the addition of a simple [classList polyfill](https://github.com/eligrey/classList.js) - see [discussion](https://github.com/ftlabs/ftcolumnflow/issues/24).
 
 ## Testing
 

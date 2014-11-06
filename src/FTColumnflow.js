@@ -69,7 +69,8 @@ var FTColumnflow = (function () {
 			standardiseLineHeight:    false,
 			minFixedPadding:          1,
 			lineHeight:               null,
-			noWrapOnTags:             []
+			noWrapOnTags:             [],
+			allowReflow:              true
 		},
 
 		// CSS Style declarations
@@ -150,6 +151,7 @@ var FTColumnflow = (function () {
 
 			// Collections
 			pagedContent = [],
+			pagedEndContent = [],
 
 			// Counters
 			borderElementIndex,
@@ -421,32 +423,34 @@ var FTColumnflow = (function () {
 			// Create the preload and render areas
 			targetChildren   = document.createDocumentFragment();
 			preloadElement   = targetChildren.appendChild(document.createElement('div'));
-			fixedPreloadArea = targetChildren.appendChild(document.createElement('div'));
 			renderArea       = targetChildren.appendChild(document.createElement('div'));
 
 			// Add the flowed content to the preload area
-			preloadColumn    = preloadElement.appendChild(document.createElement('div'));
-
-			preloadElement.className   = preloadAreaClassName + ' ' + config.pageClass;
-			preloadColumn.className    = config.columnClass;
-			fixedPreloadArea.className = preloadFixedAreaClassName;
-			renderArea.className       = renderAreaClassName;
-
-			if ('string' === typeof flowedContent) {
-				preloadColumn.innerHTML = flowedContent;
+			if ('string' === typeof flowedContent || !flowedContent) {
+				preloadColumn = preloadElement.appendChild(document.createElement('div'));
+				if (flowedContent) preloadColumn.innerHTML = flowedContent;
 			} else if (flowedContent instanceof HTMLElement) {
-				preloadColumn.innerHTML = flowedContent.innerHTML;
-			} else if (flowedContent) {
+				preloadColumn = flowedContent.cloneNode(true);
+				preloadElement.appendChild(preloadColumn);
+			} else {
 				throw new FTColumnflowException('FlowedContentException', 'flowedContent must be a HTML string or a DOM element.');
 			}
 
-			if ('string' === typeof fixedContent) {
-				fixedPreloadArea.innerHTML = fixedContent;
+			// Add the fixed content to the preload area
+			if ('string' === typeof fixedContent || !fixedContent) {
+				fixedPreloadArea = targetChildren.appendChild(document.createElement('div'));
+				if (fixedContent) fixedPreloadArea.innerHTML = fixedContent;
 			} else if (fixedContent instanceof HTMLElement) {
-				fixedPreloadArea.innerHTML = fixedContent.innerHTML;
-			} else if (fixedContent) {
+				fixedPreloadArea = fixedContent.cloneNode(true);
+				targetChildren.appendChild(fixedPreloadArea);
+			} else {
 				throw new FTColumnflowException('FixedContentException', 'fixedContent must be a HTML string or a DOM element.');
 			}
+
+			preloadElement.className   = preloadAreaClassName + ' ' + config.pageClass;
+			renderArea.className       = renderAreaClassName;
+			preloadColumn.className    = config.columnClass;
+			fixedPreloadArea.className = preloadFixedAreaClassName;
 
 			that.target.appendChild(targetChildren);
 		}
@@ -530,53 +534,16 @@ var FTColumnflow = (function () {
 		}
 
 
-		function _addFixedElement(element) {
+		function _setFixedElementHeight(element) {
 
-			var computedStyle,
-				indexedColStart,
-				indexedColEnd,
-				anchorY,
-				anchorX,
-				elementTopPos,
-				elementBottomPos,
-				lowestTopPos,
-				highestBottomPos,
-				topSplitPoint,
-				bottomSplitPoint,
-				matches,
-				indexedPageNum,
-				spanDir,
-				colSpan,
-				normalisedElementHeight,
-				columnNum,
-				firstColFragment,
-				lastColFragment,
-				newColumnFragment,
-				newFragmentHeight,
-				fragment,
-				column,
-				fragNum,
-				fragLen;
-
+			var computedStyle, indexedColStart, indexedColEnd,
+				matches, anchorY, anchorX, colSpan, spanDir;
 
 			// Don't do any manipulation on text nodes, or nodes which are hidden
-			if (Node.TEXT_NODE === element.nodeType) return;
+			if (Node.TEXT_NODE === element.nodeType) return false;
+
 			computedStyle = window.getComputedStyle(element);
-			if ('none' === computedStyle.getPropertyValue('display')) return;
-
-			element.classList.add(fixedElementClassName);
-
-			// Determine the page
-			matches = element.className.match(/(\s|^)attach-page-(\d+)(\s|$)/);
-			if (matches) {
-				indexedPageNum = matches[2] - 1;
-			} else {
-				indexedPageNum = 0;
-			}
-
-			// Create any necessary page objects
-			_createPageObjects(indexedPageNum);
-			workingPage = pagedContent[indexedPageNum];
+			if ('none' === computedStyle.getPropertyValue('display')) return false;
 
 			// Determine the anchor point
 			matches = element.className.match(/(\s|^)anchor-(top|middle|bottom)-(left|right|(?:col-(\d+)))(\s|$)/);
@@ -639,84 +606,132 @@ var FTColumnflow = (function () {
 				indexedColEnd = indexedColStart;
 			}
 
-
 			// Set an explicit width to that of the columnspan attribute
-			element.style.width = ((indexedColEnd - indexedColStart) * (config.layoutDimensions.columnWidth + config.layoutDimensions.columnGap)) + config.layoutDimensions.columnWidth + 'px';
+			element.style.width = _round(((indexedColEnd - indexedColStart) * (config.layoutDimensions.columnWidth + config.layoutDimensions.columnGap)) + config.layoutDimensions.columnWidth) + 'px';
+
+			return {
+				element:          element,
+				preComputedStyle: computedStyle,
+				indexedColStart:  indexedColStart,
+				indexedColEnd:    indexedColEnd,
+				anchorY:          anchorY,
+				anchorX:          anchorX
+			};
+		}
+
+
+		function _addFixedElement(elementDefinition) {
+
+			var element = elementDefinition.element,
+				matches, pageNum, workingPage, normalisedElementHeight,
+				elementTopPos, elementBottomPos, lowestTopPos, highestBottomPos,
+				topSplitPoint, bottomSplitPoint,
+				firstColFragment, lastColFragment, newColumnFragment, newFragmentHeight,
+				fragment, column, fragNum, fragLen,	columnNum;
+
+
+			// Determine the page
+			if (element.classList.contains('attach-page-last')) {
+
+				// Add to a separate store of elements to be added after all the other content is rendered
+				pagedEndContent.push({
+					'fixed': [{
+						content: _outerHTML(element),
+						top:     config.layoutDimensions.colDefaultTop,
+						left:    config.layoutDimensions.colDefaultLeft
+					}]
+				});
+				return;
+
+			} else {
+
+				// Look for a numeric page
+				matches = element.className.match(/(\s|^)attach-page-(\d+)(\s|$)/);
+				if (matches) {
+					pageNum = matches[2] - 1;
+				} else {
+					pageNum = 0;
+				}
+			}
+
+			// Create any necessary page objects
+			_createPageObjects(pageNum);
+			workingPage = pagedContent[pageNum];
 
 			// Determine the height of the element, taking into account any vertical shift applied to it using margin-top
-			normalisedElementHeight = element.offsetHeight + parseInt(computedStyle.getPropertyValue('margin-top'), 10);
+			normalisedElementHeight = element.offsetHeight + parseInt(elementDefinition.preComputedStyle.getPropertyValue('margin-top'), 10);
 
 			// Find the most appropriate available space for the element on the page
-			switch (anchorY) {
+			switch (elementDefinition.anchorY) {
 
-			case 'top':
-				elementTopPos = config.layoutDimensions.colDefaultTop;
-				lowestTopPos  = colDefaultBottom - normalisedElementHeight;
+				case 'top':
+					elementTopPos = config.layoutDimensions.colDefaultTop;
+					lowestTopPos  = colDefaultBottom - normalisedElementHeight;
 
-				for (columnNum = indexedColStart; columnNum <= indexedColEnd; columnNum++) {
+					for (columnNum = elementDefinition.indexedColStart; columnNum <= elementDefinition.indexedColEnd; columnNum++) {
 
-					// Find the topmost column fragment
-					firstColFragment = workingPage.columns[columnNum].fragments[0];
+						// Find the topmost column fragment
+						firstColFragment = workingPage.columns[columnNum].fragments[0];
 
-					if (!firstColFragment) {
+						if (!firstColFragment) {
 
-						// Column is full, so place element at the bottom
-						elementTopPos = lowestTopPos;
-					} else {
+							// Column is full, so place element at the bottom
+							elementTopPos = lowestTopPos;
+						} else {
 
-						// If the fragment starts below the element top position, move the element down
-						if (firstColFragment.top > elementTopPos) {
-							elementTopPos = (firstColFragment.top > lowestTopPos) ? lowestTopPos : firstColFragment.top;
+							// If the fragment starts below the element top position, move the element down
+							if (firstColFragment.top > elementTopPos) {
+								elementTopPos = (firstColFragment.top > lowestTopPos) ? lowestTopPos : firstColFragment.top;
+							}
 						}
 					}
-				}
-				elementBottomPos = elementTopPos + normalisedElementHeight;
-				topSplitPoint    = elementTopPos - config.lineHeight;
-				bottomSplitPoint = _roundUpToGrid(elementBottomPos, true);
-				break;
+					elementBottomPos = elementTopPos + normalisedElementHeight;
+					topSplitPoint    = elementTopPos - config.lineHeight;
+					bottomSplitPoint = _roundUpToGrid(elementBottomPos, true);
+					break;
 
-			case 'middle':
-				elementTopPos    = colMiddle - (normalisedElementHeight / 2);
-				topSplitPoint    = _roundDownToGrid(elementTopPos, true);
-				bottomSplitPoint = _roundUpToGrid(elementTopPos + normalisedElementHeight, true);
+				case 'middle':
+					elementTopPos    = colMiddle - (normalisedElementHeight / 2);
+					topSplitPoint    = _roundDownToGrid(elementTopPos, true);
+					bottomSplitPoint = _roundUpToGrid(elementTopPos + normalisedElementHeight, true);
 
-				if (topSplitPoint < 0) topSplitPoint = 0;
-				if (bottomSplitPoint > maxColumnHeight) bottomSplitPoint = maxColumnHeight;
-				break;
+					if (topSplitPoint < 0) topSplitPoint = 0;
+					if (bottomSplitPoint > maxColumnHeight) bottomSplitPoint = maxColumnHeight;
+					break;
 
-			case 'bottom':
-				elementBottomPos = colDefaultBottom;
-				highestBottomPos = normalisedElementHeight;
+				case 'bottom':
+					elementBottomPos = colDefaultBottom;
+					highestBottomPos = normalisedElementHeight;
 
-				for (columnNum = indexedColStart; columnNum <= indexedColEnd; columnNum++) {
+					for (columnNum = elementDefinition.indexedColStart; columnNum <= elementDefinition.indexedColEnd; columnNum++) {
 
-					// Find the bottommost column fragment
-					lastColFragment = workingPage.columns[columnNum].fragments[workingPage.columns[columnNum].fragments.length - 1];
+						// Find the bottommost column fragment
+						lastColFragment = workingPage.columns[columnNum].fragments[workingPage.columns[columnNum].fragments.length - 1];
 
-					if (!lastColFragment) {
+						if (!lastColFragment) {
 
-						// Column is full, so place element at the top
-						elementBottomPos = highestBottomPos;
-					} else {
+							// Column is full, so place element at the top
+							elementBottomPos = highestBottomPos;
+						} else {
 
-						// If the fragment ends above the element bottom position, move the element up
-						if (lastColFragment.bottom < elementBottomPos) {
-							elementBottomPos = (lastColFragment.bottom < highestBottomPos) ? highestBottomPos : lastColFragment.bottom;
+							// If the fragment ends above the element bottom position, move the element up
+							if (lastColFragment.bottom < elementBottomPos) {
+								elementBottomPos = (lastColFragment.bottom < highestBottomPos) ? highestBottomPos : lastColFragment.bottom;
+							}
 						}
 					}
-				}
 
-				elementTopPos    = elementBottomPos - normalisedElementHeight;
-				topSplitPoint    = _roundDownToGrid(elementTopPos, true);
-				bottomSplitPoint = elementBottomPos + config.lineHeight;
-				break;
+					elementTopPos    = elementBottomPos - normalisedElementHeight;
+					topSplitPoint    = _roundDownToGrid(elementTopPos, true);
+					bottomSplitPoint = elementBottomPos + config.lineHeight;
+					break;
 			}
 
 
 			/* Alter dimensions and placing of any affected column fragments. */
 
 			// Loop the columns spanned by the element
-			for (columnNum = indexedColStart; columnNum <= indexedColEnd; columnNum++) {
+			for (columnNum = elementDefinition.indexedColStart; columnNum <= elementDefinition.indexedColEnd; columnNum++) {
 
 				column = workingPage.columns[columnNum];
 
@@ -769,14 +784,13 @@ var FTColumnflow = (function () {
 				}
 			}
 
-			// Position the element correctly
-			element.style.top  = elementTopPos + 'px';
-			element.style.left = (config.layoutDimensions.colDefaultLeft + (('left' === anchorX) ? 0 : ((config.layoutDimensions.columnWidth + config.layoutDimensions.columnGap) * indexedColStart))) + 'px';
-
-			// Save the fixed content
+			// Save the fixed content string, plus positioning details
 			workingPage.fixed.push({
-				content: _outerHTML(element)
+				content: _outerHTML(element),
+				top:     elementTopPos,
+				left:    (config.layoutDimensions.colDefaultLeft + (('left' === elementDefinition.anchorX) ? 0 : ((config.layoutDimensions.columnWidth + config.layoutDimensions.columnGap) * elementDefinition.indexedColStart)))
 			});
+
 		}
 
 		function _normaliseFlowedElement(element) {
@@ -804,20 +818,21 @@ var FTColumnflow = (function () {
 
 		function _flowContent() {
 
-			var i, l;
+			var fixedElementDefinitions = [],
+				fixedElementDefinition, i, l;
 
 			// Initialise some variables
 			pagedContent      = [];
+			pagedEndContent   = [];
 
-			indexedPageNum =
-				indexedColumnNum =
-				indexedColumnFrag =
+			indexedPageNum         =
+				indexedColumnNum   =
+				indexedColumnFrag  =
 				borderElementIndex =
-				indexedPageNum =
-				indexedColumnNum =
-				indexedColumnFrag =
+				indexedColumnNum   =
+				indexedColumnFrag  =
 				topElementOverflow =
-				totalColumnHeight = 0;
+				totalColumnHeight  = 0;
 
 			// Set the maximum column height to a multiple of the lineHeight
 			maxColumnHeight   = config.lineHeight ? _roundDownToGrid(config.layoutDimensions.pageInnerHeight) : config.layoutDimensions.pageInnerHeight;
@@ -826,9 +841,17 @@ var FTColumnflow = (function () {
 			minFixedPadding   = config.minFixedPadding * config.lineHeight;
 			fixedPadding      = _roundUpToGrid(minFixedPadding);
 
-			// Add each fixed element to a page in the correct position, and determine the remaining free space for columns
+			// Add each fixed element to a page in the correct position,
+			// and determine the remaining free space for columns
+			// Two loops are run: the first sets an explicit width on the element, therefore invalidating the layout,
+			// and the second reads the element's width, forcing a recalculation of styles. This batching avoids layout thrashing.
 			for (i = 0, l = fixedPreloadArea.childNodes.length; i < l; i++) {
-				_addFixedElement(fixedPreloadArea.childNodes[i]);
+				fixedElementDefinition = _setFixedElementHeight(fixedPreloadArea.childNodes[i]);
+				if (fixedElementDefinition) fixedElementDefinitions.push(fixedElementDefinition);
+			}
+
+			for (i = 0, l = fixedElementDefinitions.length; i < l; i++) {
+				_addFixedElement(fixedElementDefinitions[i]);
 			}
 
 			/* Loop through the preload elements, and determine which column to put them in */
@@ -862,40 +885,48 @@ var FTColumnflow = (function () {
 
 			// Wrap one more time, to add everything from borderElementIndex to the the final element
 			_wrapColumn(l - 1, false);
+
+			if (!config.allowReflow) {
+				if (fixedPreloadArea.parentNode) fixedPreloadArea.parentNode.removeChild(fixedPreloadArea);
+				fixedPreloadArea = null;
+
+				if (preloadColumn.parentNode && preloadColumn.parentNode.parentNode) preloadColumn.parentNode.parentNode.removeChild(preloadColumn.parentNode);
+				preloadColumn = null;
+			}
 		}
 
 		function _addFlowedElement(element, index) {
 
-			var originalPadding, existingPadding, totalElementHeight,
-				desiredElementHeight, newPadding, overflow, loopCount,
+			var originalMargin, existingMargin, totalElementHeight,
+				desiredElementHeight, newMargin, overflow, loopCount,
 
 				nextElement = element.nextSibling;
 
 			// Check if it's necessary to sanitize elements to conform to the baseline grid
 			if (config.standardiseLineHeight) {
 
-				originalPadding = parseInt(element.getAttribute('data-cf-original-padding'), 10) || null;
-				existingPadding = parseInt(window.getComputedStyle(element).getPropertyValue('padding-bottom'), 10);
+				originalMargin = parseFloat(element.getAttribute('data-cf-original-margin'), 10) || null;
+				existingMargin = parseFloat(window.getComputedStyle(element).getPropertyValue('margin-bottom'), 10);
 
-				if (null === originalPadding) {
-					originalPadding = existingPadding;
-					element.setAttribute('data-cf-original-padding', originalPadding);
+				if (null === originalMargin) {
+					originalMargin = existingMargin;
+					element.setAttribute('data-cf-original-margin', originalMargin);
 				} else {
-					existingPadding = originalPadding;
+					existingMargin = originalMargin;
 				}
 
-				// Return the element to its original padding
-				if (originalPadding !== existingPadding) {
-					element.style.paddingBottom = originalPadding + 'px';
+				// Return the element to its original margin
+				if (originalMargin !== existingMargin) {
+					element.style.marginBottom = originalMargin + 'px';
 				}
 
-				totalElementHeight   = nextElement ? (nextElement.offsetTop - element.offsetTop) : element.offsetHeight;
+				totalElementHeight   = _getElementHeight(element, nextElement);
 				desiredElementHeight = _roundUpToGrid(totalElementHeight);
 
-				newPadding = desiredElementHeight - totalElementHeight + existingPadding;
+				newMargin = desiredElementHeight - totalElementHeight + existingMargin;
 
-				if (newPadding !== existingPadding) {
-					element.style.paddingBottom = newPadding + 'px';
+				if (newMargin !== existingMargin) {
+					element.style.marginBottom = newMargin + 'px';
 				}
 			}
 
@@ -911,6 +942,13 @@ var FTColumnflow = (function () {
 
 			// TODO:GC: Remove this loop-protection check
 			if (loopCount >= 30) console.error('FTColumnflow: Caught and destroyed a loop when wrapping columns for element', element.outerHTML.substr(0, 200) + '...');
+		}
+
+		function _getElementHeight(element, nextElement) {
+			if (!element.getBoundingClientRect) {
+				return nextElement ? (nextElement.offsetTop - element.offsetTop) : element.offsetHeight;
+			}
+			return nextElement ? nextElement.getBoundingClientRect().top - element.getBoundingClientRect().top : element.getBoundingClientRect().height;
 		}
 
 		function _wrapColumn(currentElementIndex, overflow) {
@@ -1040,7 +1078,8 @@ var FTColumnflow = (function () {
 				for (i = 0, l = page.fixed.length; i < l; i++) {
 
 					element = page.fixed[i];
-					pageHTML += element.content;
+					element.content = _addClass(element.content, fixedElementClassName);
+					pageHTML += _addStyleRule(element.content, 'top:' + _round(element.top) + 'px;left:' + _round(element.left) + 'px;');
 				}
 
 				// Add flowed content for this page
@@ -1070,7 +1109,7 @@ var FTColumnflow = (function () {
 							if (el === 0) {
 
 								// Set a *negative* top margin to shift the element up and hide the content already displayed
-								element.content = _addTopMargin(element.content, -fragment.overflow);
+								element.content = _addStyleRule(element.content, 'margin-top:' + (-fragment.overflow) + 'px;');
 							}
 
 							pageHTML += element.content;
@@ -1093,37 +1132,67 @@ var FTColumnflow = (function () {
 				outputHTML += _openPage(indexedPageNum) + pageHTML + '</div>';
 			}
 
+			// Add any end pages
+			for (indexedPageNum = 0, page_len = pagedEndContent.length; indexedPageNum < page_len; indexedPageNum++) {
+				pageHTML = '';
+				page     = pagedEndContent[indexedPageNum];
+
+				for (i = 0, l = page.fixed.length; i < l; i++) {
+
+					element = page.fixed[i];
+					element.content = _addClass(element.content, fixedElementClassName);
+					pageHTML += _addStyleRule(element.content, 'top:' + _round(element.top) + 'px;left:' + _round(element.left) + 'px;');
+				}
+
+				// Add the page contents to the HTML string
+				outputHTML += _openPage(pagedContent.length + indexedPageNum) + pageHTML + '</div>';
+			}
+
 			renderArea.innerHTML = outputHTML;
+			page_len = pagedContent.length + pagedEndContent.length;
 
 			// Set an explicit width on the target - not necessary but will allow adjacent content to flow around the flowed columns normally
 			that.target.style.width = (config.viewportWidth * page_len) + 'px';
 
 			// Update the instance page counter
-			that.pagedContentCount = pagedContent.length;
+			that.pagedContentCount = page_len;
 		}
 
 
 		/* Private methods */
 
-		function _addTopMargin(element, margin) {
+		function _addClass(element, className) {
 
 			// Modify the opening tag of the element
-			return element.replace(/<(\w+)([^>]*)>/, function _addTopMarginToTag(string, tag, attributes) {
+			return element.replace(/<(\w+)([^>]*)>/, function _addRuleToTag(string, tag, attributes) {
+
+				// If there's not yet a style attribute, add one
+				if (!string.match(/class\s*=/)) {
+					string = '<' + tag + ' class="" ' + attributes + '>';
+				}
+
+				// Add the class name
+				string = string.replace(/class=(["'])/, 'class=$1 ' + className + ' ');
+				return string;
+			});
+		}
+
+
+		function _addStyleRule(element, rule) {
+
+			// Modify the opening tag of the element
+			return element.replace(/<(\w+)([^>]*)>/, function _addRuleToTag(string, tag, attributes) {
 
 				// If there's not yet a style attribute, add one
 				if (!string.match(/style\s*=/)) {
 					string = '<' + tag + ' style="" ' + attributes + '>';
 				}
 
-				// Add the top margin declaration
-				string = string.replace(/style=(["'])/, 'style=$1 margin-top:' + margin + 'px;');
+				// Add the style rule
+				string = string.replace(/style=(["'])/, 'style=$1 ' + rule);
 				return string;
 			});
 		}
-
-
-
-
 
 
 		function _roundDownToGrid(val, addPadding) {
@@ -1141,7 +1210,7 @@ var FTColumnflow = (function () {
 		function _roundUpToGrid(val, addPadding) {
 
 			var delta   = val % config.lineHeight,
-			    resized = (delta ? (val - delta + config.lineHeight) : val);
+				resized = (delta ? (val - delta + config.lineHeight) : val);
 
 			// If the difference after rounding up is less than the minimum padding, also add one grid line
 			if (addPadding && ((resized - val) < minFixedPadding)) {
@@ -1149,6 +1218,10 @@ var FTColumnflow = (function () {
 			}
 
 			return resized;
+		}
+
+		function _round(val) {
+			return Math.round(val * 100) / 100;
 		}
 
 		function _replaceStringTokens(string, tokens) {
@@ -1241,7 +1314,7 @@ var FTColumnflow = (function () {
 
 
 		function _openColumn(column, indexedColumnNum) {
-			return '<div class="' + config.columnClass + ' ' + config.columnClass + '-' + (indexedColumnNum + 1) + '" style="height: ' + column.height + 'px; top: ' + column.top + 'px;">';
+			return '<div class="' + config.columnClass + ' ' + config.columnClass + '-' + (indexedColumnNum + 1) + '" style="height: ' + _round(column.height) + 'px; top: ' + _round(column.top) + 'px;">';
 		}
 
 
@@ -1289,6 +1362,10 @@ var FTColumnflow = (function () {
 		};
 
 		this.reflow = function(newConfig) {
+
+			if (!config.allowReflow) {
+				throw new FTColumnflowException('ReflowException', 'reflow() was called but "allowReflow" config option was false.');
+			}
 
 			if (newConfig) {
 				_setConfig(newConfig);
@@ -1353,20 +1430,20 @@ var FTColumnflow = (function () {
 
 				switch (typeof arg) {
 
-				case 'string':
+					case 'string':
 
-					arg = document.getElementById(arg);
-					if (!arg) throw new FTColumnflowException('SelectorException', name + ' must be a valid DOM element.');
-					break;
+						arg = document.getElementById(arg);
+						if (!arg) throw new FTColumnflowException('SelectorException', name + ' must be a valid DOM element.');
+						break;
 
-				case 'object':
-					if (!(arg instanceof HTMLElement)) {
+					case 'object':
+						if (!(arg instanceof HTMLElement)) {
+							throw new FTColumnflowException('ParameterException', name + ' must be a string ID or DOM element.');
+						}
+						break;
+
+					default:
 						throw new FTColumnflowException('ParameterException', name + ' must be a string ID or DOM element.');
-					}
-					break;
-
-				default:
-					throw new FTColumnflowException('ParameterException', name + ' must be a string ID or DOM element.');
 				}
 
 				that[name] = arg;
@@ -1378,7 +1455,9 @@ var FTColumnflow = (function () {
 			}
 
 			// Ensure we have an empty target
-			this.target.innerHTML = '';
+			while (this.target.lastChild) {
+				this.target.removeChild(this.target.lastChild);
+			}
 		}
 	};
 
