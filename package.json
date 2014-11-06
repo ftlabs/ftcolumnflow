@@ -12,7 +12,7 @@
     "url": "git@github.com:ftlabs/ftcolumnflow.git"
   },
   "scripts": {
-    "test": "node_modules/.bin/buster-test"
+    "test": "./node_modules/.bin/grunt test"
   },
   "keywords": [
     "css column",
