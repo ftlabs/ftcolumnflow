@@ -85,3 +85,35 @@ img { width: 100%; height: auto; }
 .unequal-margin p {
 	margin: 40px 0 20px;
 }
+
+/* Paragraphs have notional 1px margin which should be rounded up to a grid line */
+.margin1px p {
+	margin: 1px 0 0;
+	height: 60px;
+}
+
+.margin1px p:first-of-type {
+	margin-top: 0;
+}
+
+/* Paragraphs have 21px margin which should be rounded up to two grid lines */
+.margin21px p {
+	margin: 21px 0 0;
+	height: 60px;
+}
+
+.margin21px p:first-of-type {
+	margin-top: 0;
+}
+
+/* Paragraphs are 7px short of the grid, and have notional 1px margin which should therefore
+ be rounded up to a grid line*/
+.unevenmargin1px p {
+	margin: 1px 0 0;
+	height: 53px;
+}
+
+.unevenmargin1px p:first-of-type {
+	margin-top: 0;
+}
+
