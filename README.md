@@ -344,7 +344,7 @@ FTColumnflow uses [Buster.js](http://busterjs.org/) as a TDD framework. This req
 
 	There are a number of options for test output - see the [reporters documentation](http://busterjs.org/docs/test/reporters/) and the **Reporters** examples at the bottom of [the overview page](http://busterjs.org/docs/overview/).
 	
-*	Alternatively, the tests can be run in PhantomJs using the simple command:
+*	Alternatively, the tests can be run in PhantomJs, without the need for a Buster server or any captured browsers, using the simple command:
 		
 		$ grunt test
 
