@@ -74,13 +74,13 @@ var FTColumnflow = (function () {
 		},
 
 		// CSS Style declarations
-		cssStyles = '#[targetId] { position: relative; height: 100%; }\n'
-		+ '#[targetId] .[preloadAreaClassName].[pageClass] { visibility: hidden; position: absolute; overflow: hidden; }\n'
-		+ '#[targetId] .[preloadFixedAreaClassName] { visibility: hidden; position: absolute; }\n'
-		+ '#[targetId] .[pageClass] { position: absolute; width: [viewportWidth]px; height: [viewportHeight]px; [pageArrangement] }\n'
-		+ '#[targetId] .[columnClass] { position: absolute; width: [columnWidth]px; overflow: hidden; }\n'
-		+ '#[targetId] .[pageClass] .[fixedElementClassName] { position: absolute; }\n'
-		+ '#[targetId] .[pageClass] .[columnClass] > :first-child { margin-top: 0px; }\n',
+		cssStyles = '#[targetId] { position: relative; height: 100%; }\n' +
+		'#[targetId] .[preloadAreaClassName].[pageClass] { visibility: hidden; position: absolute; overflow: hidden; }\n' +
+		'#[targetId] .[preloadFixedAreaClassName] { visibility: hidden; position: absolute; }\n' +
+		'#[targetId] .[pageClass] { position: absolute; width: [viewportWidth]px; height: [viewportHeight]px; [pageArrangement] }\n' +
+		'#[targetId] .[columnClass] { position: absolute; width: [columnWidth]px; overflow: hidden; }\n' +
+		'#[targetId] .[pageClass] .[fixedElementClassName] { position: absolute; }\n' +
+		'#[targetId] .[pageClass] .[columnClass] > :first-child { margin-top: 0px; }\n',
 
 		cssColumnStyles = '#[targetId] .[columnClass].[columnClass]-[columnNum] { left: [leftPos]px; }\n',
 
@@ -124,7 +124,6 @@ var FTColumnflow = (function () {
 			fixedContent,
 
 			// Dimensions
-			maxColumnHeight,
 			colDefaultBottom,
 			colMiddle,
 			minFixedPadding,
@@ -361,6 +360,8 @@ var FTColumnflow = (function () {
 					config.layoutDimensions.columnWidth = ((config.layoutDimensions.pageInnerWidth + config.layoutDimensions.columnGap) / config.layoutDimensions.columnCount) - config.layoutDimensions.columnGap;
 				}
 			}
+
+			config.layoutDimensions.columnHeight = config.lineHeight ? _roundDownToGrid(config.layoutDimensions.pageInnerHeight) : config.layoutDimensions.pageInnerHeight;
 		}
 
 
@@ -521,6 +522,9 @@ var FTColumnflow = (function () {
 
 				config.lineHeight = _mode(lineHeights);
 			}
+
+			// Now the line-height is known, the column height can be determined
+			config.layoutDimensions.columnHeight = config.lineHeight ? _roundDownToGrid(config.layoutDimensions.pageInnerHeight) : config.layoutDimensions.pageInnerHeight;
 
 			// For debugging, show the grid lines with CSS
 			if (showGrid) {
@@ -696,7 +700,7 @@ var FTColumnflow = (function () {
 					bottomSplitPoint = _roundUpToGrid(elementTopPos + normalisedElementHeight, true);
 
 					if (topSplitPoint < 0) topSplitPoint = 0;
-					if (bottomSplitPoint > maxColumnHeight) bottomSplitPoint = maxColumnHeight;
+					if (bottomSplitPoint > config.layoutDimensions.columnHeight) bottomSplitPoint = config.layoutDimensions.columnHeight;
 					break;
 
 				case 'bottom':
@@ -835,9 +839,8 @@ var FTColumnflow = (function () {
 				totalColumnHeight  = 0;
 
 			// Set the maximum column height to a multiple of the lineHeight
-			maxColumnHeight   = config.lineHeight ? _roundDownToGrid(config.layoutDimensions.pageInnerHeight) : config.layoutDimensions.pageInnerHeight;
-			colDefaultBottom  = maxColumnHeight + config.layoutDimensions.colDefaultTop;
-			colMiddle         = config.layoutDimensions.colDefaultTop + (maxColumnHeight / 2);
+			colDefaultBottom  = config.layoutDimensions.columnHeight + config.layoutDimensions.colDefaultTop;
+			colMiddle         = config.layoutDimensions.colDefaultTop + (config.layoutDimensions.columnHeight / 2);
 			minFixedPadding   = config.minFixedPadding * config.lineHeight;
 			fixedPadding      = _roundUpToGrid(minFixedPadding);
 
@@ -897,36 +900,45 @@ var FTColumnflow = (function () {
 
 		function _addFlowedElement(element, index) {
 
-			var originalMargin, existingMargin, totalElementHeight,
-				desiredElementHeight, newMargin, overflow, loopCount,
+			var originalMargin, existingMargin, nextElementOffset, elementHeight,
+				newMargin, largestMargin, overflow, loopCount,
 
 				nextElement = element.nextSibling;
 
 			// Check if it's necessary to sanitize elements to conform to the baseline grid
 			if (config.standardiseLineHeight) {
 
-				originalMargin = parseFloat(element.getAttribute('data-cf-original-margin'), 10) || null;
 				existingMargin = parseFloat(window.getComputedStyle(element).getPropertyValue('margin-bottom'), 10);
 
-				if (null === originalMargin) {
-					originalMargin = existingMargin;
-					element.setAttribute('data-cf-original-margin', originalMargin);
+				// If reflowing is enabled, try to read the original margin for the
+				// element, in case it was already modified
+				if (config.allowReflow) {
+					originalMargin = parseFloat(element.getAttribute('data-cf-original-margin'), 10) || null;
+					if (null === originalMargin) {
+						originalMargin = existingMargin;
+						element.setAttribute('data-cf-original-margin', originalMargin);
+					} else if (originalMargin !== existingMargin) {
+
+						// Return the element to its original margin
+						element.style.marginBottom = originalMargin + 'px';
+					}
 				} else {
-					existingMargin = originalMargin;
+					originalMargin = existingMargin;
 				}
 
-				// Return the element to its original margin
-				if (originalMargin !== existingMargin) {
-					element.style.marginBottom = originalMargin + 'px';
-				}
+				nextElementOffset = _getNextElementOffset(element, nextElement);
+				elementHeight     = element.offsetHeight;
 
-				totalElementHeight   = _getElementHeight(element, nextElement);
-				desiredElementHeight = _roundUpToGrid(totalElementHeight);
+				// The next element's top is not aligned to the grid
+				if (nextElementOffset % config.lineHeight) {
 
-				newMargin = desiredElementHeight - totalElementHeight + existingMargin;
+					// Allow for collapsing margins
+					largestMargin = Math.max(existingMargin, nextElement ? parseFloat(window.getComputedStyle(nextElement).getPropertyValue('margin-top'), 10) : 0);
+					newMargin     = _roundUpToGrid(elementHeight) - elementHeight + _roundUpToGrid(largestMargin);
 
-				if (newMargin !== existingMargin) {
-					element.style.marginBottom = newMargin + 'px';
+					if (newMargin !== existingMargin) {
+						element.style.marginBottom = newMargin + 'px';
+					}
 				}
 			}
 
@@ -944,7 +956,7 @@ var FTColumnflow = (function () {
 			if (loopCount >= 30) console.error('FTColumnflow: Caught and destroyed a loop when wrapping columns for element', element.outerHTML.substr(0, 200) + '...');
 		}
 
-		function _getElementHeight(element, nextElement) {
+		function _getNextElementOffset(element, nextElement) {
 			if (!element.getBoundingClientRect) {
 				return nextElement ? (nextElement.offsetTop - element.offsetTop) : element.offsetHeight;
 			}
@@ -1267,7 +1279,7 @@ var FTColumnflow = (function () {
 			return {
 				elements:    [],
 				overflow:    0,
-				height:      maxColumnHeight,
+				height:      config.layoutDimensions.columnHeight,
 				top:         config.layoutDimensions.colDefaultTop,
 				bottom:      colDefaultBottom
 			};

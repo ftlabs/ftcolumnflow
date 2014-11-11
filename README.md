@@ -317,7 +317,7 @@ FTColumnflow supports the following browsers:
 * Mobile Safari (iOS 5+)
 * Android browser (ICS+)
 * Blackberry browser (PlaybookOS 2.0.1+)
-* Microsoft Internet Explorer (10+)
+* Microsoft Internet Explorer (9+ - IE9 needs a [classList polyfill](https://github.com/eligrey/classList.js))
 
 ## Testing
 
@@ -343,6 +343,10 @@ FTColumnflow uses [Buster.js](http://busterjs.org/) as a TDD framework. This req
 		$ buster test
 
 	There are a number of options for test output - see the [reporters documentation](http://busterjs.org/docs/test/reporters/) and the **Reporters** examples at the bottom of [the overview page](http://busterjs.org/docs/overview/).
+	
+*	Alternatively, the tests can be run in PhantomJs, without the need for a Buster server or any captured browsers, using the simple command:
+		
+		$ grunt test
 
 ## Credits and collaboration
 

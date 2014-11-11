@@ -38,17 +38,6 @@ buster.testCase('BaselineGrid', {
 		assert.match(column.offsetHeight, 595);
 	},
 
-	'ShouldReduceColumnHeightToNearestMultipleOfLineheight' : function() {
-
-		document.body.className = 'lineheight17';
-
-		createCf().flow('<p>flowedContent</p>');
-
-		var column  = target.querySelector('.cf-column-1');
-
-		assert.match(column.offsetHeight, 595);
-	},
-
 	'ShouldCalculateCorrectGridHeightWhenLineheightIsInEms' : function() {
 
 		document.body.className = 'lineheight-in-ems';
@@ -182,7 +171,7 @@ buster.testCase('BaselineGrid', {
 		assert.match(parags[2].offsetTop, 146);
 	},
 
-	'ShouldRoundUpElementMarginsWhenConfigured' : function() {
+	'ShouldRoundUpAndCollapseElementMarginsWhenConfigured' : function() {
 
 		document.body.className = 'unpadded-parags';
 
@@ -193,7 +182,92 @@ buster.testCase('BaselineGrid', {
 		var column = target.querySelector('.cf-column-1');
 		var parags = column.getElementsByTagName('p');
 
+		// 53-px parags with a collapsed 20px top/bottom margin, so rounded-up to 80px
+		assert.match(parags[0].offsetTop, 0);
+		assert.match(parags[1].offsetTop, 80);
+		assert.match(parags[2].offsetTop, 160);
+	},
+
+	'ShouldRoundUpTopMargin' : function() {
+
+		document.body.className = 'unpadded-parags top-margin';
+
+		createCf({
+			standardiseLineHeight : true,
+		}).flow('<p>Test paragraph</p><p>Test paragraph</p><p>Test paragraph</p>');
+
+		var column = target.querySelector('.cf-column-1');
+		var parags = column.getElementsByTagName('p');
+
 		// 53-px parags with a 20px margin, so rounded-up to 80px
+		assert.match(parags[0].offsetTop, 0);
+		assert.match(parags[1].offsetTop, 80);
+		assert.match(parags[2].offsetTop, 160);
+	},
+
+	'ShouldRoundUpBottomMargin' : function() {
+
+		document.body.className = 'unpadded-parags bottom-margin';
+
+		createCf({
+			standardiseLineHeight : true,
+		}).flow('<p>Test paragraph</p><p>Test paragraph</p><p>Test paragraph</p>');
+
+		var column = target.querySelector('.cf-column-1');
+		var parags = column.getElementsByTagName('p');
+
+		// 53-px parags with a 20px margin, so rounded-up to 80px
+		assert.match(parags[0].offsetTop, 0);
+		assert.match(parags[1].offsetTop, 80);
+		assert.match(parags[2].offsetTop, 160);
+	},
+
+	'1pxMarginShouldRoundUpTo1GridLine' : function() {
+
+		document.body.className = 'margin1px';
+
+		createCf({
+			standardiseLineHeight : true,
+		}).flow('<p>Test paragraph</p><p>Test paragraph</p><p>Test paragraph</p>');
+
+		var column = target.querySelector('.cf-column-1');
+		var parags = column.getElementsByTagName('p');
+
+		// 60-px parags with a 1px top margin (except for first), so rounded-up to 80px
+		assert.match(parags[0].offsetTop, 0);
+		assert.match(parags[1].offsetTop, 80);
+		assert.match(parags[2].offsetTop, 160);
+	},
+
+	'21pxMarginShouldRoundUpTo2GridLines' : function() {
+
+		document.body.className = 'margin21px';
+
+		createCf({
+			standardiseLineHeight : true,
+		}).flow('<p>Test paragraph</p><p>Test paragraph</p><p>Test paragraph</p>');
+
+		var column = target.querySelector('.cf-column-1');
+		var parags = column.getElementsByTagName('p');
+
+		// 60-px parags with a 1px top margin (except for first), so rounded-up to 80px
+		assert.match(parags[0].offsetTop, 0);
+		assert.match(parags[1].offsetTop, 100);
+		assert.match(parags[2].offsetTop, 200);
+	},
+
+	'1pxMarginOnUnevenHeightShouldRoundUpTo1GridLine' : function() {
+
+		document.body.className = 'unevenmargin1px';
+
+		createCf({
+			standardiseLineHeight : true,
+		}).flow('<p>Test paragraph</p><p>Test paragraph</p><p>Test paragraph</p>');
+
+		var column = target.querySelector('.cf-column-1');
+		var parags = column.getElementsByTagName('p');
+
+		// 53-px parags with a 1px top margin (except for first), so rounded-up to 80px
 		assert.match(parags[0].offsetTop, 0);
 		assert.match(parags[1].offsetTop, 80);
 		assert.match(parags[2].offsetTop, 160);
