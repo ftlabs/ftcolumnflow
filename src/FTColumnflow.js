@@ -23,7 +23,7 @@
 
 /*jslint browser:true, es5: true*/
 /*global Node*/
-var FTColumnflow = (function () {
+window.FTColumnflow = (function () {
 
 	"use strict";
 
