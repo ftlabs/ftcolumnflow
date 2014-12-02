@@ -23,7 +23,10 @@
 
 /*jslint browser:true, es5: true*/
 /*global Node*/
-var FTColumnflow = (function () {
+
+
+// UMD from https://gist.github.com/wilsonpage/8598603
+;(function(define){define(function(require,exports,module){
 
 	"use strict";
 
@@ -1473,6 +1476,10 @@ var FTColumnflow = (function () {
 		}
 	};
 
-	return FTColumnflow;
+	module.exports = FTColumnflow;
 
-}());
+// Close UMD
+});})(typeof define=='function'&&define.amd?define
+:(function(n,w){'use strict';return typeof module=='object'?function(c){
+c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
+return w[n];},m.exports,m);w[n]=m.exports;};})('FTColumnflow',this));
