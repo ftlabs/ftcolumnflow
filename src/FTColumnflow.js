@@ -87,7 +87,7 @@
 
 		cssColumnStyles = '#[targetId] .[columnClass].[columnClass]-[columnNum] { left: [leftPos]px; }\n',
 
-		showGridStyles = '#[targetId] .[pageClass] { background-image: -webkit-linear-gradient(skyblue 1px, transparent 1px); background-size: 100% [lh]px; background-origin: content-box; }',
+        showGridStyles = '#[targetId] .[pageClass] { background-image: -webkit-linear-gradient(skyblue 1px, transparent 1px); background-image: -moz-linear-gradient(skyblue 1px, transparent 1px); background-image: -o-linear-gradient(skyblue 1px, transparent 1px); background-image: linear-gradient(skyblue 1px, transparent 1px); background-size: 100% [lh]px; background-origin: content-box; }',
 
 
 		// Implement outerHTML in browsers which don't support it
@@ -1082,7 +1082,7 @@
 		function _renderFlowedContent() {
 
 			var outputHTML = '', indexedPageNum, page_len, pageHTML, page, i, l, element, indexedColumnNum,
-				column_len, column, indexedColumnFrag, fragLen, el, fragment;
+				column_len, total_column_len = 0, column, indexedColumnFrag, fragLen, el, fragment;
 
 			for (indexedPageNum = 0, page_len = pagedContent.length; indexedPageNum < page_len; indexedPageNum++) {
 
@@ -1115,6 +1115,7 @@
 
 						// Open a column div
 						pageHTML += _openColumn(fragment, indexedColumnNum);
+                        total_column_len += 1;
 
 						for (el = 0, l = fragment.elements.length; el < l; el++) {
 
@@ -1166,8 +1167,12 @@
 			renderArea.innerHTML = outputHTML;
 			page_len = pagedContent.length + pagedEndContent.length;
 
-			// Set an explicit width on the target - not necessary but will allow adjacent content to flow around the flowed columns normally
-			that.target.style.width = (config.viewportWidth * page_len) + 'px';
+            // Set an explicit width or height on the target - not necessary but will allow adjacent content to flow around the flowed columns normally
+            if ('horizontal' === config.pageArrangement) {
+                that.target.style.width = (config.viewportWidth * page_len * ( total_column_len / ( page_len * column_len ) ) ) + 'px';
+            } else {
+                that.target.style.height = (config.viewportHeight * page_len) + 'px';
+            }
 
 			// Update the instance page counter
 			that.pagedContentCount = page_len;
